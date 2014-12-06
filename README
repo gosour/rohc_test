@@ -9,3 +9,6 @@ An index of all files here
 3.  sampling_same_packets.c : Generates 100 packets(same) and compresses it.
 	output files: 	sampling_output.txt (output of above)
 					sampling_plot.txt (prettified output of same, tab separated)
+
+4. OnTheRoad
+	VLC streaming audio -> Compress -> Decompress -> VLC stream capture
