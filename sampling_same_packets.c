@@ -59,7 +59,7 @@
 #define FAKE_PAYLOAD "hello, ROHC world!"
  
 #define PACKET_COUNT 100
-/* return a random number every time it is called */
+/* return a random number	 every time it is called */
 static int gen_random_num(const struct rohc_comp *const comp,
                           void *const user_context)
 {

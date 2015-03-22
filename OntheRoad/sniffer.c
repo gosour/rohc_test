@@ -1,22 +1,21 @@
 /*
    Packet sniffer using libpcap library
    */
-#include<pcap.h>
-#include<stdio.h>
-#include<stdlib.h> // for exit()
-#include<string.h> //for memset
+#include <pcap.h>
+#include <stdio.h>
+#include <stdlib.h> // for exit()
+#include <string.h> //for memset
 
-#include<sys/socket.h>
-#include<arpa/inet.h> // for inet_ntoa()
-#include<net/ethernet.h>
-#include<netinet/ip_icmp.h>   //Provides declarations for icmp header
-#include<netinet/udp.h>   //Provides declarations for udp header
-#include<netinet/tcp.h>   //Provides declarations for tcp header
-#include<netinet/ip.h>    //Provides declarations for ip header
-
-#include<rohc/rohc_buf.h>
-#include<rohc/rohc_comp.h>
-#include<time.h>
+#include <sys/socket.h>
+#include <arpa/inet.h> // for inet_ntoa()
+#include <net/ethernet.h>
+#include <netinet/ip_icmp.h>   //Provides declarations for icmp header
+#include <netinet/udp.h>   //Provides declarations for udp header
+#include <netinet/tcp.h>   //Provides declarations for tcp header
+#include <netinet/ip.h>    //Provides declarations for ip header
+#include <rohc/rohc_buf.h>
+#include <rohc/rohc_comp.h>
+#include <time.h>
 
 #define BUFFER_SIZE 4096
 
@@ -24,7 +23,7 @@ void process_packet(u_char *, const struct pcap_pkthdr *, const u_char *);
 void process_ip_packet(const u_char * , int);
 void print_ip_packet(const u_char * , int);
 void print_tcp_packet(const u_char *  , int );
-void print_udp_packet(const u_char * , int);
+void print_udp_packet(const struct pcap_pkthdr *h, const u_char * , int);
 void print_icmp_packet(const u_char * , int );
 void PrintData (const u_char * , int);
 
@@ -33,6 +32,7 @@ static int gen_random_num(const struct rohc_comp *const comp,
 {
 	return rand();
 }
+
 
 FILE *logfile;
 struct sockaddr_in source,dest;
@@ -132,42 +132,27 @@ int main()
 }
 
 #define FAKE_PAYLOAD "hello, ROHC world!"
-void print_udp_packet(const u_char *Buffer , int Size)
+void print_udp_packet(const struct pcap_pkthdr *h, const u_char *Buffer , int Size)
 {
 
 	unsigned short iphdrlen;
 	struct iphdr *ip_header, *iph = (struct iphdr *)(Buffer +  sizeof(struct ethhdr));
 	struct udphdr *udph = (struct udphdr*)(Buffer + iphdrlen  + sizeof(struct ethhdr));
 	iphdrlen = iph->ihl*4;
-	
 	int header_size =  sizeof(struct ethhdr) + iphdrlen + sizeof(struct udphdr);	
-	printf("Size of data in packet captured: %d\n", Size-header_size);
+	
+	//struct rohc_ts arrival_time = { .sec = h->ts.seconds, .nsec = h->ts.micros };
+
 	/* the buffer that will contain the ip/udp packet to compress */
 	uint8_t packet_buffer[BUFFER_SIZE];
 	/* the packet that will contain the ip/udp packet to compress */
-	struct rohc_buf packet = rohc_buf_init_empty(packet_buffer, BUFFER_SIZE);
-		
-	// /*IPv4 header*/
-	// ip_header = (struct iphdr *) rohc_buf_data(packet);
-	// ip_header->version = 4; /* we create an IP header version 4 */
-	// ip_header->ihl = iph->ihl; /* min. IPv4 header length (in 32-bit words) */
-	// packet.len = iph->ihl * 4; /* in no. of bytes*/
-	// ip_header->tos = iph->tos; /* TOS is not important for the example */
-	// ip_header->tot_len = htons(Size - sizeof(struct ethhdr));
-	// ip_header->id = iph->id; /* ID is not important for the example */
-	// ip_header->frag_off = iph->frag_off; /* No packet fragmentation */
-	// ip_header->ttl = iph->ttl; /* TTL is not important for the example */
-	// ip_header->protocol = iph->protocol; /* protocol number */
-	// ip_header->check = iph->check; /* checksum */
-	// ip_header->saddr = iph->saddr; /* source address 1.2.3.4 */
-	// ip_header->daddr = iph->daddr; /* destination addr. 5.6.7.8 */
 
-	/*IP header*/
-	memcpy(rohc_buf_data_at(packet,0), Buffer + sizeof(struct ethhdr), iphdrlen);
-	/*UDP header*/
-	memcpy(rohc_buf_data_at(packet,iphdrlen), Buffer + iphdrlen  + sizeof(struct ethhdr), sizeof(struct udphdr));
-	/*Copy payload*/
-	memcpy(rohc_buf_data_at(packet,header_size), FAKE_PAYLOAD, strlen(FAKE_PAYLOAD));
+	const struct rohs_ts arrival_time;
+	arrival_time->sec = h->ts.tv_sec;
+	arrival_time->nsec = h->ts.tv_usec;
+	struct rohc_buf packet = rohc_buf_init_full(Buffer+sizeof(struct ethhdr),Size-sizeof(struct ethhdr),arrival_time);
+		
+		
 
 	uint8_t rohc_buffer[BUFFER_SIZE];
 	struct rohc_buf rohc_packet = rohc_buf_init_empty(rohc_buffer, BUFFER_SIZE);
@@ -229,7 +214,7 @@ void process_packet(u_char *args, const struct pcap_pkthdr *header, const u_char
 
 		case 17: //UDP Protocol
 			++udp;
-			print_udp_packet(buffer , size);
+			print_udp_packet(header, buffer , size);
 			break;
 
 		default: //Some Other Protocol like ARP etc.
