@@ -1,0 +1,50 @@
+
+	/*FILL IP HEADER*/
+	ip_header->version = 4;
+	ip_header->ihl = 5;
+	ip_header->tos = 0x00;
+	ip_header->tot_len = 461;
+	ip_header->id = 0x6b8d;
+	ip_header->frag_off = 0;
+	ip_header->ttl = 64;
+	ip_header->protocol = 17;
+	ip_header->check = 0xcf90;
+	ip_header->saddr = 0x7f000001;
+	ip_header->daddr = 0x7f000001;
+
+	/*FILL UDP HEADER*/
+	udp_header->uh_sport = (u_short)39475;
+	udp_header->uh_dport = (u_short)5504;
+	udp_header->uh_ulen = (short)441;
+	udp_header->uh_sum = (u_short)0xffcc;
+
+	rohc_buf_byte_at(*packet, 0) = 4 << 4; /* IP version 4 */
+	rohc_buf_byte_at(*packet, 0) |= 5; /* IHL: minimal IPv4 header length (in 32-bit words) */
+	rohc_buf_byte_at(*packet, 1) = 0; /* TOS */
+	rohc_buf_byte_at(*packet, 2) = (461 >> 8) & 0xff; /* Total Length */
+	rohc_buf_byte_at(*packet, 3) = 461 & 0xff;
+	rohc_buf_byte_at(*packet, 4) = 0x6b; /* IP-ID */
+	rohc_buf_byte_at(*packet, 5) = 0x8d;
+	rohc_buf_byte_at(*packet, 6) = 0; /* Fragment Offset and IP flags */
+	rohc_buf_byte_at(*packet, 7) = 0;
+	rohc_buf_byte_at(*packet, 8) = 64; /* TTL */
+	rohc_buf_byte_at(*packet, 9) = 17; /* Protocol: UDP */
+	rohc_buf_byte_at(*packet, 10) = 0xcf; /* fake Checksum */
+	rohc_buf_byte_at(*packet, 11) = 0x90;
+	rohc_buf_byte_at(*packet, 12) = 0x7f; /* Source address */
+	rohc_buf_byte_at(*packet, 13) = 0x00;
+	rohc_buf_byte_at(*packet, 14) = 0x00;
+	rohc_buf_byte_at(*packet, 15) = 0x01;
+	rohc_buf_byte_at(*packet, 16) = 0x7f; /* Destination address */
+	rohc_buf_byte_at(*packet, 17) = 0x00;
+	rohc_buf_byte_at(*packet, 18) = 0x00;
+	rohc_buf_byte_at(*packet, 19) = 0x01;
+
+	rohc_buf_byte_at(*packet, 20) = 0x9a; /* source port */
+	rohc_buf_byte_at(*packet, 21) = 0x33;
+	rohc_buf_byte_at(*packet, 22) = 0x15; /* destination port = 10042 */
+	rohc_buf_byte_at(*packet, 23) = 0x80;
+	rohc_buf_byte_at(*packet, 24) = 0x01; /* UDP length */
+	rohc_buf_byte_at(*packet, 25) = 0x39;
+	rohc_buf_byte_at(*packet, 26) = 0xff; /* UDP checksum = 0 */
+	rohc_buf_byte_at(*packet, 27) = 0xcc;

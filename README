@@ -1,0 +1,14 @@
+An index of all files here
+
+1. simple_rohc_program.c : Generates one packet and compresses it
+
+2.	multiple_packets_rohc.c : Generates 4 packets(same) and compresses it (just a simple extension of previous)	
+	output files: 	MULT_SAME_PACKET.out (use this for analysing state/context changes)
+					statistics.txt (just cleaner output of all packets)
+					
+3.  sampling_same_packets.c : Generates 100 packets(same) and compresses it.
+	output files: 	sampling_output.txt (output of above)
+					sampling_plot.txt (prettified output of same, tab separated)
+
+4. OnTheRoad
+	VLC streaming audio -> Compress -> Decompress -> VLC stream capture
