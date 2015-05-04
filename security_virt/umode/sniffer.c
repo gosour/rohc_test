@@ -190,7 +190,7 @@ print_payload(const u_char *payload, int len)
 
 
 int DecompressPacket(const char *payload, int size_payload){
-	printf("Attempting to Decompress\n");
+	printf("Attempting to Decompress, IN O_MODE\n");
 	struct rohc_decomp *decompressor;       /* the ROHC decompressor */
 
 	/*Fill the rohc buffer with recieved compressed packet*/
@@ -215,13 +215,15 @@ int DecompressPacket(const char *payload, int size_payload){
 		printf("\n");
 	}
 	
-	printf("YWOW!!\n");
 	/* the buffer that will contain the resulting IP packet */
 	unsigned char ip_buffer[BUFFER_SIZE];
 	struct rohc_buf ip_packet = rohc_buf_init_empty(ip_buffer, BUFFER_SIZE);
-	/* we do not want to handle feedback in this simple example */
-	struct rohc_buf *rcvd_feedback = NULL;
-	struct rohc_buf *feedback_send = NULL;
+
+	/* we Do not want to handle feedback this time */
+	unsigned char rcvd_feedback_buffer[BUFFER_SIZE];
+	unsigned char feedback_send_buffer[BUFFER_SIZE];
+	struct rohc_buf rcvd_feedback = rohc_buf_init_empty(rcvd_feedback_buffer,BUFFER_SIZE);
+	struct rohc_buf feedback_send = rohc_buf_init_empty(feedback_send_buffer,BUFFER_SIZE);
 
 	rohc_status_t status;
 
@@ -230,7 +232,7 @@ int DecompressPacket(const char *payload, int size_payload){
 	/*Remember to create the decompressor exact to the compressor
 	Prothome chorachillam
 	*/
-	decompressor = rohc_decomp_new2(ROHC_SMALL_CID, ROHC_SMALL_CID_MAX, ROHC_U_MODE);
+	decompressor = rohc_decomp_new2(ROHC_SMALL_CID, ROHC_SMALL_CID_MAX, ROHC_O_MODE);
 	if(decompressor == NULL)
 	{
 		fprintf(stderr, "failed create the ROHC decompressor\n");
@@ -261,7 +263,7 @@ int DecompressPacket(const char *payload, int size_payload){
 	printf("\ndecompress the fake ROHC packet\n");
 	//! [decompress ROHC packet #1]
 	status = rohc_decompress3(decompressor, rohc_packet, &ip_packet,
-			rcvd_feedback, feedback_send);
+			&rcvd_feedback, &feedback_send);
 	if(status == ROHC_STATUS_OK)
 	{
 		/* decompression is successful */
@@ -269,20 +271,16 @@ int DecompressPacket(const char *payload, int size_payload){
 		{
 			/* ip_packet.len bytes of decompressed IP data available in
 			 * ip_packet: dump the IP packet on the standard output */
-			printf("IP packet resulting from the ROHC decompression:\n");
-			//	dump_packet(ip_packet);
+			printf("IP packet resulted from the ROHC decompression:\n");
 		}
 		else
-		{
-			/* no IP packet was decompressed because of ROHC segmentation or
-			 * feedback-only packet:
-			 *  - the ROHC packet was a non-final segment, so at least another
-			 *    ROHC segment is required to be able to decompress the full
-			 *    ROHC packet
-			 *  - the ROHC packet was a feedback-only packet, it contained only
-			 *    feedback information, so there was nothing to decompress */
 			printf("no IP packet decompressed");
-		}
+
+
+		if(!rohc_buf_is_empty(rcvd_feedback))
+			printf("YOYOYOYO WE GOT FEEDBACK!\n");
+		if(!rohc_buf_is_empty(feedback_send))
+			printf("YOYOYOYO WE GOT ONE FRESHLY BAKED FEEDBACK\n");
 	}
 	else
 	{

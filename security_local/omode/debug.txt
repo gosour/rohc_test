@@ -1,0 +1,643 @@
+create the ROHC compressor
+enable the IP-only compression profile
+please define a callback for compressor traces
+[rohc_comp.c:2304 rohc_comp_enable_profile()] ROHC compression profile (ID = 4) enabled
+Will compress one single IPv4 packet and broadcast it
+build a fake IP packet
+compress the fake IP packet
+[net_pkt.c:75 net_pkt_parse()] outer IP header: 38 bytes
+[net_pkt.c:77 net_pkt_parse()] outer IP header: version 4
+[net_pkt.c:82 net_pkt_parse()] outer IP header: next header is of type 134
+[net_pkt.c:87 net_pkt_parse()] outer IP header: next layer is of type 134
+[rohc_comp.c:4608 c_get_profile_from_packet()] try to find the best profile for packet with transport protocol 134
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/UDP/RTP' (0x0001)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/UDP' (0x0002)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/UDP-Lite' (0x0008)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/ESP' (0x0003)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/TCP' (0x0006)
+[rohc_comp.c:4813 rohc_comp_find_ctxt()] using profile 'IP-only' (0x0004)
+[rohc_comp.c:4860 rohc_comp_find_ctxt()] no existing context found for packet, create a new one
+[rohc_comp.c:4720 c_create_context()] take the first unused context (CID = 0)
+[c_generic.c:502 c_generic_create()] new generic context required for a new stream
+[c_generic.c:528 c_generic_create()] use shift parameter -1 for LSB-encoding of SN
+[c_ip.c:82 rohc_ip_ctxt_create()] initialize context(SN) = random() = 19854
+[rohc_comp.c:4767 c_create_context()] context (CID = 0) created (num_used = 1)
+[rohc_comp.c:1435 rohc_compress4()] compress the packet #1
+[c_generic.c:1217 c_generic_detect_changes()] SN = 19855
+[c_generic.c:6292 detect_ip_id_behaviour()] no previous IP-ID, consider non-random/static and NBO
+[c_generic.c:6356 detect_ip_id_behaviour()] NBO = 1, RND = 0, SID = 0
+[c_generic.c:6185 detect_changed_fields()] TTL/HL changed from 0x00 to 0x01
+[c_generic.c:6193 detect_changed_fields()] Protocol/NH changed from 0x00 to 0x86
+[c_generic.c:5901 changed_static_one_hdr()] protocol_count 3
+[c_generic.c:5931 changed_dynamic_both_hdr()] check for changed fields in the outer IP header
+[c_generic.c:6009 changed_dynamic_one_hdr()] TTL/HL changed in the current packet
+[c_generic.c:6070 changed_dynamic_one_hdr()] NBO changed (0x0 -> 0x1) in the current packet
+[c_generic.c:1282 c_generic_detect_changes()] send_static = 1, send_dynamic = 2
+[c_generic.c:1363 decide_state()] no enough packets transmitted in IR state for the moment (0/3), so stay in IR state
+[c_generic.c:1307 periodic_down_transition()] CID 0: timeouts for periodic refreshes: FO = 0 / 700, IR = 0 / 1700
+[c_generic.c:6426 encode_uncomp_fields()] compressor is in state 1
+[c_generic.c:6431 encode_uncomp_fields()] new SN = 19855 / 0x4d8f
+[c_generic.c:6439 encode_uncomp_fields()] IR state: force using 16 bits to encode new SN
+[c_generic.c:6454 encode_uncomp_fields()] 16 bits are required to encode new SN
+[c_generic.c:6475 encode_uncomp_fields()] new outer IP-ID delta = 0xb271 / 45681 (NBO = 1, RND = 0, SID = 0)
+[c_generic.c:6483 encode_uncomp_fields()] IR state: force using 16 bits to encode new outer IP-ID delta
+[c_generic.c:6506 encode_uncomp_fields()] 16 bits are required to encode new outer IP-ID delta
+[c_generic.c:1497 decide_packet()] decide packet in IR state
+[c_generic.c:1542 decide_packet()] packet 'IR' chosen
+[c_generic.c:1719 code_IR_packet()] code IR packet (CID = 0)
+[c_generic.c:1738 code_IR_packet()] small CID 0 encoded on 0 byte(s)
+[c_generic.c:1750 code_IR_packet()] type of packet + D flag = 0xfd
+[c_generic.c:1762 code_IR_packet()] profile ID = 0x04
+[c_generic.c:1768 code_IR_packet()] CRC = 0x00 for CRC calculation
+[c_generic.c:2089 code_ipv4_static_part()] version = 0x40
+[c_generic.c:2094 code_ipv4_static_part()] protocol = 0x86
+[c_generic.c:2103 code_ipv4_static_part()] src addr = 01020304 (1.2.3.4)
+[c_generic.c:2110 code_ipv4_static_part()] dst addr = 05060708 (5.6.7.8)
+[c_generic.c:2339 code_ipv4_dynamic_part()] TOS = 0x00
+[c_generic.c:2346 code_ipv4_dynamic_part()] TTL = 0x01
+[c_generic.c:2356 code_ipv4_dynamic_part()] IP-ID = 0x00 0x00
+[c_generic.c:2377 code_ipv4_dynamic_part()] (DF = 0, RND = 0, NBO = 1, SID = 0) = 0x20
+[c_generic.c:2389 code_ipv4_dynamic_part()] Generic extension header list = 0x00
+[c_ip.c:508 c_ip_code_ir_remainder()] SN = 19855 -> 0x4d8f
+[c_generic.c:1808 code_IR_packet()] CRC (header length = 21, crc = 0x8d)
+[rohc_comp.c:1563 rohc_compress4()] copy full 18-byte payload
+[rohc_comp.c:1573 rohc_compress4()] ROHC size = 39 bytes (header = 21, payload = 18), output buffer size = 2048
+destroy the ROHC compressor
+-----------------------
+Sent a packet
+Waiting for feedback
+listener: waiting to recvfrom...
+listener: got packet from 192.168.0.101
+listener: packet is 7 bytes long
+00000   f6 20 4d 41 8f 11 50                                . MA..P
+---------------
+[rohc_comp.c:3954 rohc_comp_deliver_feedback2()] deliver 7 byte(s) of feedback to the right context
+[rohc_comp.c:3982 rohc_comp_deliver_feedback2()] feedback found (header = 1 bytes, data = 6 bytes)
+[rohc_comp.c:3782 __rohc_comp_deliver_feedback()] deliver 6 byte(s) of feedback to the right context
+[rohc_comp.c:3819 __rohc_comp_deliver_feedback()] feedback CID = 0
+[rohc_comp.c:3823 __rohc_comp_deliver_feedback()] feedback size = 6
+[c_generic.c:975 c_generic_feedback()] FEEDBACK-2 received
+[c_generic.c:1104 c_generic_feedback_2()] mode change (1 -> 2) requested by feedback for CID 0
+[c_generic.c:784 change_mode()] CID 0: change from mode 1 to mode 2
+[c_generic.c:1124 c_generic_feedback_2()] ACK received (CID = 0, SN = 0x00004d8f, SN-not-valid = 0)
+[rohc_comp.c:3869 __rohc_comp_deliver_feedback()] FEEDBACK-2 data successfully handled
+Feedback successfully delivered
+Will compress one single IPv4 packet and broadcast it
+build a fake IP packet
+compress the fake IP packet
+[net_pkt.c:75 net_pkt_parse()] outer IP header: 38 bytes
+[net_pkt.c:77 net_pkt_parse()] outer IP header: version 4
+[net_pkt.c:82 net_pkt_parse()] outer IP header: next header is of type 134
+[net_pkt.c:87 net_pkt_parse()] outer IP header: next layer is of type 134
+[rohc_comp.c:4608 c_get_profile_from_packet()] try to find the best profile for packet with transport protocol 134
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/UDP/RTP' (0x0001)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/UDP' (0x0002)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/UDP-Lite' (0x0008)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/ESP' (0x0003)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/TCP' (0x0006)
+[rohc_comp.c:4813 rohc_comp_find_ctxt()] using profile 'IP-only' (0x0004)
+[rohc_comp.c:4843 rohc_comp_find_ctxt()] using context CID = 0
+[rohc_comp.c:1435 rohc_compress4()] compress the packet #2
+[c_generic.c:1217 c_generic_detect_changes()] SN = 19856
+[c_generic.c:6309 detect_ip_id_behaviour()] 1) old_id = 0x0000 new_id = 0x0000
+[c_generic.c:6314 detect_ip_id_behaviour()] IP-ID is constant (SID detected)
+[c_generic.c:6356 detect_ip_id_behaviour()] NBO = 1, RND = 0, SID = 1
+[c_generic.c:5901 changed_static_one_hdr()] protocol_count 1
+[c_generic.c:5931 changed_dynamic_both_hdr()] check for changed fields in the outer IP header
+[c_generic.c:6015 changed_dynamic_one_hdr()] TTL/HL changed in the last few packets
+[c_generic.c:6076 changed_dynamic_one_hdr()] NBO changed in the last few packets
+[c_generic.c:6094 changed_dynamic_one_hdr()] SID changed (0x0 -> 0x1) in the current packet
+[c_generic.c:1282 c_generic_detect_changes()] send_static = 1, send_dynamic = 2
+[c_generic.c:1363 decide_state()] no enough packets transmitted in IR state for the moment (1/3), so stay in IR state
+[c_generic.c:6426 encode_uncomp_fields()] compressor is in state 1
+[c_generic.c:6431 encode_uncomp_fields()] new SN = 19856 / 0x4d90
+[c_generic.c:6439 encode_uncomp_fields()] IR state: force using 16 bits to encode new SN
+[c_generic.c:6454 encode_uncomp_fields()] 16 bits are required to encode new SN
+[c_generic.c:6475 encode_uncomp_fields()] new outer IP-ID delta = 0xb270 / 45680 (NBO = 1, RND = 0, SID = 1)
+[c_generic.c:6483 encode_uncomp_fields()] IR state: force using 16 bits to encode new outer IP-ID delta
+[c_generic.c:6506 encode_uncomp_fields()] 16 bits are required to encode new outer IP-ID delta
+[c_generic.c:1497 decide_packet()] decide packet in IR state
+[c_generic.c:1542 decide_packet()] packet 'IR' chosen
+[c_generic.c:1719 code_IR_packet()] code IR packet (CID = 0)
+[c_generic.c:1738 code_IR_packet()] small CID 0 encoded on 0 byte(s)
+[c_generic.c:1750 code_IR_packet()] type of packet + D flag = 0xfd
+[c_generic.c:1762 code_IR_packet()] profile ID = 0x04
+[c_generic.c:1768 code_IR_packet()] CRC = 0x00 for CRC calculation
+[c_generic.c:2089 code_ipv4_static_part()] version = 0x40
+[c_generic.c:2094 code_ipv4_static_part()] protocol = 0x86
+[c_generic.c:2103 code_ipv4_static_part()] src addr = 01020304 (1.2.3.4)
+[c_generic.c:2110 code_ipv4_static_part()] dst addr = 05060708 (5.6.7.8)
+[c_generic.c:2339 code_ipv4_dynamic_part()] TOS = 0x00
+[c_generic.c:2346 code_ipv4_dynamic_part()] TTL = 0x01
+[c_generic.c:2356 code_ipv4_dynamic_part()] IP-ID = 0x00 0x00
+[c_generic.c:2377 code_ipv4_dynamic_part()] (DF = 0, RND = 0, NBO = 1, SID = 1) = 0x30
+[c_generic.c:2389 code_ipv4_dynamic_part()] Generic extension header list = 0x00
+[c_ip.c:508 c_ip_code_ir_remainder()] SN = 19856 -> 0x4d90
+[c_generic.c:1808 code_IR_packet()] CRC (header length = 21, crc = 0xe7)
+[rohc_comp.c:1563 rohc_compress4()] copy full 18-byte payload
+[rohc_comp.c:1573 rohc_compress4()] ROHC size = 39 bytes (header = 21, payload = 18), output buffer size = 2048
+destroy the ROHC compressor
+-----------------------
+Sent a packet
+Waiting for feedback
+listener: waiting to recvfrom...
+listener: got packet from 192.168.0.101
+listener: packet is 7 bytes long
+00000   f6 20 4d 41 8f 12 50                                . MA..P
+---------------
+[rohc_comp.c:3954 rohc_comp_deliver_feedback2()] deliver 7 byte(s) of feedback to the right context
+[rohc_comp.c:3982 rohc_comp_deliver_feedback2()] feedback found (header = 1 bytes, data = 6 bytes)
+[rohc_comp.c:3782 __rohc_comp_deliver_feedback()] deliver 6 byte(s) of feedback to the right context
+[rohc_comp.c:3819 __rohc_comp_deliver_feedback()] feedback CID = 0
+[rohc_comp.c:3823 __rohc_comp_deliver_feedback()] feedback size = 6
+[c_generic.c:975 c_generic_feedback()] FEEDBACK-2 received
+[c_generic.c:1046 c_generic_feedback_2()] 2-byte FEEDBACK-2 is too short for 3-byte option 1
+[c_generic.c:979 c_generic_feedback()] failed to handle FEEDBACK-2
+[rohc_comp.c:3863 __rohc_comp_deliver_feedback()] failed to handle FEEDBACK-2 data
+[rohc_comp.c:4001 rohc_comp_deliver_feedback2()] failed to deliver feedback item #1
+Feedback unsuccessfully delivered
+Will compress one single IPv4 packet and broadcast it
+build a fake IP packet
+compress the fake IP packet
+[net_pkt.c:75 net_pkt_parse()] outer IP header: 38 bytes
+[net_pkt.c:77 net_pkt_parse()] outer IP header: version 4
+[net_pkt.c:82 net_pkt_parse()] outer IP header: next header is of type 134
+[net_pkt.c:87 net_pkt_parse()] outer IP header: next layer is of type 134
+[rohc_comp.c:4608 c_get_profile_from_packet()] try to find the best profile for packet with transport protocol 134
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/UDP/RTP' (0x0001)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/UDP' (0x0002)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/UDP-Lite' (0x0008)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/ESP' (0x0003)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/TCP' (0x0006)
+[rohc_comp.c:4813 rohc_comp_find_ctxt()] using profile 'IP-only' (0x0004)
+[rohc_comp.c:4843 rohc_comp_find_ctxt()] using context CID = 0
+[rohc_comp.c:1435 rohc_compress4()] compress the packet #3
+[c_generic.c:1217 c_generic_detect_changes()] SN = 19857
+[c_generic.c:6309 detect_ip_id_behaviour()] 1) old_id = 0x0000 new_id = 0x0000
+[c_generic.c:6314 detect_ip_id_behaviour()] IP-ID is constant (SID detected)
+[c_generic.c:6356 detect_ip_id_behaviour()] NBO = 1, RND = 0, SID = 1
+[c_generic.c:5901 changed_static_one_hdr()] protocol_count 2
+[c_generic.c:5931 changed_dynamic_both_hdr()] check for changed fields in the outer IP header
+[c_generic.c:6015 changed_dynamic_one_hdr()] TTL/HL changed in the last few packets
+[c_generic.c:6076 changed_dynamic_one_hdr()] NBO changed in the last few packets
+[c_generic.c:6100 changed_dynamic_one_hdr()] SID changed in the last few packets
+[c_generic.c:1282 c_generic_detect_changes()] send_static = 1, send_dynamic = 2
+[c_generic.c:1363 decide_state()] no enough packets transmitted in IR state for the moment (2/3), so stay in IR state
+[c_generic.c:6426 encode_uncomp_fields()] compressor is in state 1
+[c_generic.c:6431 encode_uncomp_fields()] new SN = 19857 / 0x4d91
+[c_generic.c:6439 encode_uncomp_fields()] IR state: force using 16 bits to encode new SN
+[c_generic.c:6454 encode_uncomp_fields()] 16 bits are required to encode new SN
+[c_generic.c:6475 encode_uncomp_fields()] new outer IP-ID delta = 0xb26f / 45679 (NBO = 1, RND = 0, SID = 1)
+[c_generic.c:6483 encode_uncomp_fields()] IR state: force using 16 bits to encode new outer IP-ID delta
+[c_generic.c:6506 encode_uncomp_fields()] 16 bits are required to encode new outer IP-ID delta
+[c_generic.c:1497 decide_packet()] decide packet in IR state
+[c_generic.c:1542 decide_packet()] packet 'IR' chosen
+[c_generic.c:1719 code_IR_packet()] code IR packet (CID = 0)
+[c_generic.c:1738 code_IR_packet()] small CID 0 encoded on 0 byte(s)
+[c_generic.c:1750 code_IR_packet()] type of packet + D flag = 0xfd
+[c_generic.c:1762 code_IR_packet()] profile ID = 0x04
+[c_generic.c:1768 code_IR_packet()] CRC = 0x00 for CRC calculation
+[c_generic.c:2089 code_ipv4_static_part()] version = 0x40
+[c_generic.c:2094 code_ipv4_static_part()] protocol = 0x86
+[c_generic.c:2103 code_ipv4_static_part()] src addr = 01020304 (1.2.3.4)
+[c_generic.c:2110 code_ipv4_static_part()] dst addr = 05060708 (5.6.7.8)
+[c_generic.c:2339 code_ipv4_dynamic_part()] TOS = 0x00
+[c_generic.c:2346 code_ipv4_dynamic_part()] TTL = 0x01
+[c_generic.c:2356 code_ipv4_dynamic_part()] IP-ID = 0x00 0x00
+[c_generic.c:2377 code_ipv4_dynamic_part()] (DF = 0, RND = 0, NBO = 1, SID = 1) = 0x30
+[c_generic.c:2389 code_ipv4_dynamic_part()] Generic extension header list = 0x00
+[c_ip.c:508 c_ip_code_ir_remainder()] SN = 19857 -> 0x4d91
+[c_generic.c:1808 code_IR_packet()] CRC (header length = 21, crc = 0x76)
+[rohc_comp.c:1563 rohc_compress4()] copy full 18-byte payload
+[rohc_comp.c:1573 rohc_compress4()] ROHC size = 39 bytes (header = 21, payload = 18), output buffer size = 2048
+destroy the ROHC compressor
+-----------------------
+Sent a packet
+Waiting for feedback
+listener: waiting to recvfrom...
+listener: got packet from 192.168.0.101
+listener: packet is 7 bytes long
+00000   f6 20 4d 41 8f 13 50                                . MA..P
+---------------
+[rohc_comp.c:3954 rohc_comp_deliver_feedback2()] deliver 7 byte(s) of feedback to the right context
+[rohc_comp.c:3982 rohc_comp_deliver_feedback2()] feedback found (header = 1 bytes, data = 6 bytes)
+[rohc_comp.c:3782 __rohc_comp_deliver_feedback()] deliver 6 byte(s) of feedback to the right context
+[rohc_comp.c:3819 __rohc_comp_deliver_feedback()] feedback CID = 0
+[rohc_comp.c:3823 __rohc_comp_deliver_feedback()] feedback size = 6
+[c_generic.c:975 c_generic_feedback()] FEEDBACK-2 received
+[c_generic.c:1046 c_generic_feedback_2()] 2-byte FEEDBACK-2 is too short for 4-byte option 1
+[c_generic.c:979 c_generic_feedback()] failed to handle FEEDBACK-2
+[rohc_comp.c:3863 __rohc_comp_deliver_feedback()] failed to handle FEEDBACK-2 data
+[rohc_comp.c:4001 rohc_comp_deliver_feedback2()] failed to deliver feedback item #1
+Feedback unsuccessfully delivered
+Will compress one single IPv4 packet and broadcast it
+build a fake IP packet
+compress the fake IP packet
+[net_pkt.c:75 net_pkt_parse()] outer IP header: 38 bytes
+[net_pkt.c:77 net_pkt_parse()] outer IP header: version 4
+[net_pkt.c:82 net_pkt_parse()] outer IP header: next header is of type 134
+[net_pkt.c:87 net_pkt_parse()] outer IP header: next layer is of type 134
+[rohc_comp.c:4608 c_get_profile_from_packet()] try to find the best profile for packet with transport protocol 134
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/UDP/RTP' (0x0001)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/UDP' (0x0002)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/UDP-Lite' (0x0008)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/ESP' (0x0003)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/TCP' (0x0006)
+[rohc_comp.c:4813 rohc_comp_find_ctxt()] using profile 'IP-only' (0x0004)
+[rohc_comp.c:4843 rohc_comp_find_ctxt()] using context CID = 0
+[rohc_comp.c:1435 rohc_compress4()] compress the packet #4
+[c_generic.c:1217 c_generic_detect_changes()] SN = 19858
+[c_generic.c:6309 detect_ip_id_behaviour()] 1) old_id = 0x0000 new_id = 0x0000
+[c_generic.c:6314 detect_ip_id_behaviour()] IP-ID is constant (SID detected)
+[c_generic.c:6356 detect_ip_id_behaviour()] NBO = 1, RND = 0, SID = 1
+[c_generic.c:5931 changed_dynamic_both_hdr()] check for changed fields in the outer IP header
+[c_generic.c:6100 changed_dynamic_one_hdr()] SID changed in the last few packets
+[c_generic.c:1282 c_generic_detect_changes()] send_static = 0, send_dynamic = 0
+[c_generic.c:1387 decide_state()] at least one SID flag changed now or in the last few packets, so go to FO state
+[c_generic.c:808 change_state()] CID 0: change from state 1 to state 2
+[c_generic.c:6426 encode_uncomp_fields()] compressor is in state 2
+[c_generic.c:6431 encode_uncomp_fields()] new SN = 19858 / 0x4d92
+[c_generic.c:6454 encode_uncomp_fields()] 1 bits are required to encode new SN
+[c_generic.c:6475 encode_uncomp_fields()] new outer IP-ID delta = 0xb26e / 45678 (NBO = 1, RND = 0, SID = 1)
+[c_generic.c:6490 encode_uncomp_fields()] outer IP-ID is constant, no IP-ID bit to transmit
+[c_generic.c:6506 encode_uncomp_fields()] 0 bits are required to encode new outer IP-ID delta
+[c_generic.c:1505 decide_packet()] decide packet in FO state
+[c_ip.c:258 c_ip_decide_FO_packet()] choose packet IR-DYN because at least one SID flag changed
+[c_generic.c:1542 decide_packet()] packet 'IR-DYN' chosen
+[c_generic.c:1876 code_IR_DYN_packet()] code IR-DYN packet (CID = 0)
+[c_generic.c:1895 code_IR_DYN_packet()] small CID 0 encoded on 0 byte(s)
+[c_generic.c:2339 code_ipv4_dynamic_part()] TOS = 0x00
+[c_generic.c:2346 code_ipv4_dynamic_part()] TTL = 0x01
+[c_generic.c:2356 code_ipv4_dynamic_part()] IP-ID = 0x00 0x00
+[c_generic.c:2377 code_ipv4_dynamic_part()] (DF = 0, RND = 0, NBO = 1, SID = 1) = 0x30
+[c_generic.c:2389 code_ipv4_dynamic_part()] Generic extension header list = 0x00
+[c_ip.c:508 c_ip_code_ir_remainder()] SN = 19858 -> 0x4d92
+[c_generic.c:1952 code_IR_DYN_packet()] CRC (header length = 11, crc = 0xb2)
+[rohc_comp.c:1563 rohc_compress4()] copy full 18-byte payload
+[rohc_comp.c:1573 rohc_compress4()] ROHC size = 29 bytes (header = 11, payload = 18), output buffer size = 2048
+destroy the ROHC compressor
+-----------------------
+Sent a packet
+Waiting for feedback
+listener: waiting to recvfrom...
+listener: got packet from 192.168.0.101
+listener: packet is 7 bytes long
+00000   f6 20 4d 41 8f 14 50                                . MA..P
+---------------
+[rohc_comp.c:3954 rohc_comp_deliver_feedback2()] deliver 7 byte(s) of feedback to the right context
+[rohc_comp.c:3982 rohc_comp_deliver_feedback2()] feedback found (header = 1 bytes, data = 6 bytes)
+[rohc_comp.c:3782 __rohc_comp_deliver_feedback()] deliver 6 byte(s) of feedback to the right context
+[rohc_comp.c:3819 __rohc_comp_deliver_feedback()] feedback CID = 0
+[rohc_comp.c:3823 __rohc_comp_deliver_feedback()] feedback size = 6
+[c_generic.c:975 c_generic_feedback()] FEEDBACK-2 received
+[c_generic.c:1046 c_generic_feedback_2()] 2-byte FEEDBACK-2 is too short for 5-byte option 1
+[c_generic.c:979 c_generic_feedback()] failed to handle FEEDBACK-2
+[rohc_comp.c:3863 __rohc_comp_deliver_feedback()] failed to handle FEEDBACK-2 data
+[rohc_comp.c:4001 rohc_comp_deliver_feedback2()] failed to deliver feedback item #1
+Feedback unsuccessfully delivered
+Will compress one single IPv4 packet and broadcast it
+build a fake IP packet
+compress the fake IP packet
+[net_pkt.c:75 net_pkt_parse()] outer IP header: 38 bytes
+[net_pkt.c:77 net_pkt_parse()] outer IP header: version 4
+[net_pkt.c:82 net_pkt_parse()] outer IP header: next header is of type 134
+[net_pkt.c:87 net_pkt_parse()] outer IP header: next layer is of type 134
+[rohc_comp.c:4608 c_get_profile_from_packet()] try to find the best profile for packet with transport protocol 134
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/UDP/RTP' (0x0001)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/UDP' (0x0002)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/UDP-Lite' (0x0008)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/ESP' (0x0003)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/TCP' (0x0006)
+[rohc_comp.c:4813 rohc_comp_find_ctxt()] using profile 'IP-only' (0x0004)
+[rohc_comp.c:4843 rohc_comp_find_ctxt()] using context CID = 0
+[rohc_comp.c:1435 rohc_compress4()] compress the packet #5
+[c_generic.c:1217 c_generic_detect_changes()] SN = 19859
+[c_generic.c:6309 detect_ip_id_behaviour()] 1) old_id = 0x0000 new_id = 0x0000
+[c_generic.c:6314 detect_ip_id_behaviour()] IP-ID is constant (SID detected)
+[c_generic.c:6356 detect_ip_id_behaviour()] NBO = 1, RND = 0, SID = 1
+[c_generic.c:5931 changed_dynamic_both_hdr()] check for changed fields in the outer IP header
+[c_generic.c:1282 c_generic_detect_changes()] send_static = 0, send_dynamic = 0
+[c_generic.c:1403 decide_state()] no enough packets transmitted in FO state for the moment (1/3), so stay in FO state
+[c_generic.c:6426 encode_uncomp_fields()] compressor is in state 2
+[c_generic.c:6431 encode_uncomp_fields()] new SN = 19859 / 0x4d93
+[c_generic.c:6454 encode_uncomp_fields()] 2 bits are required to encode new SN
+[c_generic.c:6475 encode_uncomp_fields()] new outer IP-ID delta = 0xb26d / 45677 (NBO = 1, RND = 0, SID = 1)
+[c_generic.c:6490 encode_uncomp_fields()] outer IP-ID is constant, no IP-ID bit to transmit
+[c_generic.c:6506 encode_uncomp_fields()] 0 bits are required to encode new outer IP-ID delta
+[c_generic.c:1505 decide_packet()] decide packet in FO state
+[c_ip.c:286 c_ip_decide_FO_packet()] choose packet UOR-2 because 2 <= 13 SN bits must be transmitted
+[c_generic.c:1542 decide_packet()] packet 'UOR-2' chosen
+[c_generic.c:3295 code_UO2_packet()] code UOR-2 packet (CID = 0)
+[c_generic.c:3335 code_UO2_packet()] small CID 0 encoded on 0 byte(s)
+[c_generic.c:3373 code_UO2_packet()] extension 'none' chosen
+[c_generic.c:3484 code_UOR2_bytes()] code UOR-2 packet with no extension
+[c_generic.c:3384 code_UO2_packet()] f_byte = 0xd3
+[c_generic.c:3401 code_UO2_packet()] t_byte = 0x74
+[rohc_comp.c:1563 rohc_compress4()] copy full 18-byte payload
+[rohc_comp.c:1573 rohc_compress4()] ROHC size = 20 bytes (header = 2, payload = 18), output buffer size = 2048
+destroy the ROHC compressor
+-----------------------
+Sent a packet
+Will compress one single IPv4 packet and broadcast it
+build a fake IP packet
+compress the fake IP packet
+[net_pkt.c:75 net_pkt_parse()] outer IP header: 38 bytes
+[net_pkt.c:77 net_pkt_parse()] outer IP header: version 4
+[net_pkt.c:82 net_pkt_parse()] outer IP header: next header is of type 134
+[net_pkt.c:87 net_pkt_parse()] outer IP header: next layer is of type 134
+[rohc_comp.c:4608 c_get_profile_from_packet()] try to find the best profile for packet with transport protocol 134
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/UDP/RTP' (0x0001)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/UDP' (0x0002)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/UDP-Lite' (0x0008)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/ESP' (0x0003)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/TCP' (0x0006)
+[rohc_comp.c:4813 rohc_comp_find_ctxt()] using profile 'IP-only' (0x0004)
+[rohc_comp.c:4843 rohc_comp_find_ctxt()] using context CID = 0
+[rohc_comp.c:1435 rohc_compress4()] compress the packet #6
+[c_generic.c:1217 c_generic_detect_changes()] SN = 19860
+[c_generic.c:6309 detect_ip_id_behaviour()] 1) old_id = 0x0000 new_id = 0x0000
+[c_generic.c:6314 detect_ip_id_behaviour()] IP-ID is constant (SID detected)
+[c_generic.c:6356 detect_ip_id_behaviour()] NBO = 1, RND = 0, SID = 1
+[c_generic.c:5931 changed_dynamic_both_hdr()] check for changed fields in the outer IP header
+[c_generic.c:1282 c_generic_detect_changes()] send_static = 0, send_dynamic = 0
+[c_generic.c:1403 decide_state()] no enough packets transmitted in FO state for the moment (2/3), so stay in FO state
+[c_generic.c:6426 encode_uncomp_fields()] compressor is in state 2
+[c_generic.c:6431 encode_uncomp_fields()] new SN = 19860 / 0x4d94
+[c_generic.c:6454 encode_uncomp_fields()] 2 bits are required to encode new SN
+[c_generic.c:6475 encode_uncomp_fields()] new outer IP-ID delta = 0xb26c / 45676 (NBO = 1, RND = 0, SID = 1)
+[c_generic.c:6490 encode_uncomp_fields()] outer IP-ID is constant, no IP-ID bit to transmit
+[c_generic.c:6506 encode_uncomp_fields()] 0 bits are required to encode new outer IP-ID delta
+[c_generic.c:1505 decide_packet()] decide packet in FO state
+[c_ip.c:286 c_ip_decide_FO_packet()] choose packet UOR-2 because 2 <= 13 SN bits must be transmitted
+[c_generic.c:1542 decide_packet()] packet 'UOR-2' chosen
+[c_generic.c:3295 code_UO2_packet()] code UOR-2 packet (CID = 0)
+[c_generic.c:3335 code_UO2_packet()] small CID 0 encoded on 0 byte(s)
+[c_generic.c:3373 code_UO2_packet()] extension 'none' chosen
+[c_generic.c:3484 code_UOR2_bytes()] code UOR-2 packet with no extension
+[c_generic.c:3384 code_UO2_packet()] f_byte = 0xd4
+[c_generic.c:3401 code_UO2_packet()] t_byte = 0x74
+[rohc_comp.c:1563 rohc_compress4()] copy full 18-byte payload
+[rohc_comp.c:1573 rohc_compress4()] ROHC size = 20 bytes (header = 2, payload = 18), output buffer size = 2048
+destroy the ROHC compressor
+-----------------------
+Sent a packet
+Waiting for feedback
+listener: waiting to recvfrom...
+listener: got packet from 192.168.0.101
+listener: packet is 7 bytes long
+00000   f6 20 4d 41 8f 15 50                                . MA..P
+---------------
+[rohc_comp.c:3954 rohc_comp_deliver_feedback2()] deliver 7 byte(s) of feedback to the right context
+[rohc_comp.c:3982 rohc_comp_deliver_feedback2()] feedback found (header = 1 bytes, data = 6 bytes)
+[rohc_comp.c:3782 __rohc_comp_deliver_feedback()] deliver 6 byte(s) of feedback to the right context
+[rohc_comp.c:3819 __rohc_comp_deliver_feedback()] feedback CID = 0
+[rohc_comp.c:3823 __rohc_comp_deliver_feedback()] feedback size = 6
+[c_generic.c:975 c_generic_feedback()] FEEDBACK-2 received
+[c_generic.c:1046 c_generic_feedback_2()] 2-byte FEEDBACK-2 is too short for 6-byte option 1
+[c_generic.c:979 c_generic_feedback()] failed to handle FEEDBACK-2
+[rohc_comp.c:3863 __rohc_comp_deliver_feedback()] failed to handle FEEDBACK-2 data
+[rohc_comp.c:4001 rohc_comp_deliver_feedback2()] failed to deliver feedback item #1
+Feedback unsuccessfully delivered
+Will compress one single IPv4 packet and broadcast it
+build a fake IP packet
+compress the fake IP packet
+[net_pkt.c:75 net_pkt_parse()] outer IP header: 38 bytes
+[net_pkt.c:77 net_pkt_parse()] outer IP header: version 4
+[net_pkt.c:82 net_pkt_parse()] outer IP header: next header is of type 134
+[net_pkt.c:87 net_pkt_parse()] outer IP header: next layer is of type 134
+[rohc_comp.c:4608 c_get_profile_from_packet()] try to find the best profile for packet with transport protocol 134
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/UDP/RTP' (0x0001)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/UDP' (0x0002)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/UDP-Lite' (0x0008)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/ESP' (0x0003)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/TCP' (0x0006)
+[rohc_comp.c:4813 rohc_comp_find_ctxt()] using profile 'IP-only' (0x0004)
+[rohc_comp.c:4843 rohc_comp_find_ctxt()] using context CID = 0
+[rohc_comp.c:1435 rohc_compress4()] compress the packet #7
+[c_generic.c:1217 c_generic_detect_changes()] SN = 19861
+[c_generic.c:6309 detect_ip_id_behaviour()] 1) old_id = 0x0000 new_id = 0x0000
+[c_generic.c:6314 detect_ip_id_behaviour()] IP-ID is constant (SID detected)
+[c_generic.c:6356 detect_ip_id_behaviour()] NBO = 1, RND = 0, SID = 1
+[c_generic.c:5931 changed_dynamic_both_hdr()] check for changed fields in the outer IP header
+[c_generic.c:1282 c_generic_detect_changes()] send_static = 0, send_dynamic = 0
+[c_generic.c:1427 decide_state()] no STATIC nor DYNAMIC field changed in the last few packets, so go to SO state
+[c_generic.c:808 change_state()] CID 0: change from state 2 to state 3
+[c_generic.c:6426 encode_uncomp_fields()] compressor is in state 3
+[c_generic.c:6431 encode_uncomp_fields()] new SN = 19861 / 0x4d95
+[c_generic.c:6454 encode_uncomp_fields()] 2 bits are required to encode new SN
+[c_generic.c:6475 encode_uncomp_fields()] new outer IP-ID delta = 0xb26b / 45675 (NBO = 1, RND = 0, SID = 1)
+[c_generic.c:6490 encode_uncomp_fields()] outer IP-ID is constant, no IP-ID bit to transmit
+[c_generic.c:6506 encode_uncomp_fields()] 0 bits are required to encode new outer IP-ID delta
+[c_generic.c:1520 decide_packet()] decide packet in SO state
+[c_ip.c:331 c_ip_decide_SO_packet()] nr_ip_bits = 0, nr_sn_bits = 2, nr_of_ip_hdr = 1, rnd = 0
+[c_ip.c:350 c_ip_decide_SO_packet()] choose packet UO-0 because 2 <= 4 SN bits must be transmitted, and the single IP header is either 'non-IPv4' or 'IPv4 with random IP-ID' or 'IPv4 with non-random IP-ID but 0 IP-ID bit to transmit'
+[c_generic.c:1542 decide_packet()] packet 'UO-0' chosen
+[c_generic.c:2656 code_UO0_packet()] code UO-0 packet (CID = 0)
+[c_generic.c:2675 code_UO0_packet()] small CID 0 encoded on 0 byte(s)
+[c_generic.c:2691 code_UO0_packet()] first byte = 0x2d (CRC = 0x5)
+[rohc_comp.c:1563 rohc_compress4()] copy full 18-byte payload
+[rohc_comp.c:1573 rohc_compress4()] ROHC size = 19 bytes (header = 1, payload = 18), output buffer size = 2048
+destroy the ROHC compressor
+-----------------------
+Sent a packet
+Waiting for feedback
+listener: waiting to recvfrom...
+listener: got packet from 192.168.0.101
+listener: packet is 7 bytes long
+00000   f6 20 4d 41 8f 17 50                                . MA..P
+---------------
+[rohc_comp.c:3954 rohc_comp_deliver_feedback2()] deliver 7 byte(s) of feedback to the right context
+[rohc_comp.c:3982 rohc_comp_deliver_feedback2()] feedback found (header = 1 bytes, data = 6 bytes)
+[rohc_comp.c:3782 __rohc_comp_deliver_feedback()] deliver 6 byte(s) of feedback to the right context
+[rohc_comp.c:3819 __rohc_comp_deliver_feedback()] feedback CID = 0
+[rohc_comp.c:3823 __rohc_comp_deliver_feedback()] feedback size = 6
+[c_generic.c:975 c_generic_feedback()] FEEDBACK-2 received
+[c_generic.c:1046 c_generic_feedback_2()] 2-byte FEEDBACK-2 is too short for 8-byte option 1
+[c_generic.c:979 c_generic_feedback()] failed to handle FEEDBACK-2
+[rohc_comp.c:3863 __rohc_comp_deliver_feedback()] failed to handle FEEDBACK-2 data
+[rohc_comp.c:4001 rohc_comp_deliver_feedback2()] failed to deliver feedback item #1
+Feedback unsuccessfully delivered
+Will compress one single IPv4 packet and broadcast it
+build a fake IP packet
+compress the fake IP packet
+[net_pkt.c:75 net_pkt_parse()] outer IP header: 38 bytes
+[net_pkt.c:77 net_pkt_parse()] outer IP header: version 4
+[net_pkt.c:82 net_pkt_parse()] outer IP header: next header is of type 134
+[net_pkt.c:87 net_pkt_parse()] outer IP header: next layer is of type 134
+[rohc_comp.c:4608 c_get_profile_from_packet()] try to find the best profile for packet with transport protocol 134
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/UDP/RTP' (0x0001)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/UDP' (0x0002)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/UDP-Lite' (0x0008)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/ESP' (0x0003)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/TCP' (0x0006)
+[rohc_comp.c:4813 rohc_comp_find_ctxt()] using profile 'IP-only' (0x0004)
+[rohc_comp.c:4843 rohc_comp_find_ctxt()] using context CID = 0
+[rohc_comp.c:1435 rohc_compress4()] compress the packet #8
+[c_generic.c:1217 c_generic_detect_changes()] SN = 19862
+[c_generic.c:6309 detect_ip_id_behaviour()] 1) old_id = 0x0000 new_id = 0x0000
+[c_generic.c:6314 detect_ip_id_behaviour()] IP-ID is constant (SID detected)
+[c_generic.c:6356 detect_ip_id_behaviour()] NBO = 1, RND = 0, SID = 1
+[c_generic.c:5931 changed_dynamic_both_hdr()] check for changed fields in the outer IP header
+[c_generic.c:1282 c_generic_detect_changes()] send_static = 0, send_dynamic = 0
+[c_generic.c:1454 decide_state()] no STATIC nor DYNAMIC field changed in the last few packets, so stay in SO state
+[c_generic.c:6426 encode_uncomp_fields()] compressor is in state 3
+[c_generic.c:6431 encode_uncomp_fields()] new SN = 19862 / 0x4d96
+[c_generic.c:6454 encode_uncomp_fields()] 2 bits are required to encode new SN
+[c_generic.c:6475 encode_uncomp_fields()] new outer IP-ID delta = 0xb26a / 45674 (NBO = 1, RND = 0, SID = 1)
+[c_generic.c:6490 encode_uncomp_fields()] outer IP-ID is constant, no IP-ID bit to transmit
+[c_generic.c:6506 encode_uncomp_fields()] 0 bits are required to encode new outer IP-ID delta
+[c_generic.c:1520 decide_packet()] decide packet in SO state
+[c_ip.c:331 c_ip_decide_SO_packet()] nr_ip_bits = 0, nr_sn_bits = 2, nr_of_ip_hdr = 1, rnd = 0
+[c_ip.c:350 c_ip_decide_SO_packet()] choose packet UO-0 because 2 <= 4 SN bits must be transmitted, and the single IP header is either 'non-IPv4' or 'IPv4 with random IP-ID' or 'IPv4 with non-random IP-ID but 0 IP-ID bit to transmit'
+[c_generic.c:1542 decide_packet()] packet 'UO-0' chosen
+[c_generic.c:2656 code_UO0_packet()] code UO-0 packet (CID = 0)
+[c_generic.c:2675 code_UO0_packet()] small CID 0 encoded on 0 byte(s)
+[c_generic.c:2691 code_UO0_packet()] first byte = 0x35 (CRC = 0x5)
+[rohc_comp.c:1563 rohc_compress4()] copy full 18-byte payload
+[rohc_comp.c:1573 rohc_compress4()] ROHC size = 19 bytes (header = 1, payload = 18), output buffer size = 2048
+destroy the ROHC compressor
+-----------------------
+Sent a packet
+Waiting for feedback
+listener: waiting to recvfrom...
+listener: got packet from 192.168.0.101
+listener: packet is 7 bytes long
+00000   f6 20 4d 41 8f 18 50                                . MA..P
+---------------
+[rohc_comp.c:3954 rohc_comp_deliver_feedback2()] deliver 7 byte(s) of feedback to the right context
+[rohc_comp.c:3982 rohc_comp_deliver_feedback2()] feedback found (header = 1 bytes, data = 6 bytes)
+[rohc_comp.c:3782 __rohc_comp_deliver_feedback()] deliver 6 byte(s) of feedback to the right context
+[rohc_comp.c:3819 __rohc_comp_deliver_feedback()] feedback CID = 0
+[rohc_comp.c:3823 __rohc_comp_deliver_feedback()] feedback size = 6
+[c_generic.c:975 c_generic_feedback()] FEEDBACK-2 received
+[c_generic.c:1046 c_generic_feedback_2()] 2-byte FEEDBACK-2 is too short for 9-byte option 1
+[c_generic.c:979 c_generic_feedback()] failed to handle FEEDBACK-2
+[rohc_comp.c:3863 __rohc_comp_deliver_feedback()] failed to handle FEEDBACK-2 data
+[rohc_comp.c:4001 rohc_comp_deliver_feedback2()] failed to deliver feedback item #1
+Feedback unsuccessfully delivered
+Will compress one single IPv4 packet and broadcast it
+build a fake IP packet
+compress the fake IP packet
+[net_pkt.c:75 net_pkt_parse()] outer IP header: 38 bytes
+[net_pkt.c:77 net_pkt_parse()] outer IP header: version 4
+[net_pkt.c:82 net_pkt_parse()] outer IP header: next header is of type 134
+[net_pkt.c:87 net_pkt_parse()] outer IP header: next layer is of type 134
+[rohc_comp.c:4608 c_get_profile_from_packet()] try to find the best profile for packet with transport protocol 134
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/UDP/RTP' (0x0001)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/UDP' (0x0002)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/UDP-Lite' (0x0008)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/ESP' (0x0003)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/TCP' (0x0006)
+[rohc_comp.c:4813 rohc_comp_find_ctxt()] using profile 'IP-only' (0x0004)
+[rohc_comp.c:4843 rohc_comp_find_ctxt()] using context CID = 0
+[rohc_comp.c:1435 rohc_compress4()] compress the packet #9
+[c_generic.c:1217 c_generic_detect_changes()] SN = 19863
+[c_generic.c:6309 detect_ip_id_behaviour()] 1) old_id = 0x0000 new_id = 0x0000
+[c_generic.c:6314 detect_ip_id_behaviour()] IP-ID is constant (SID detected)
+[c_generic.c:6356 detect_ip_id_behaviour()] NBO = 1, RND = 0, SID = 1
+[c_generic.c:5931 changed_dynamic_both_hdr()] check for changed fields in the outer IP header
+[c_generic.c:1282 c_generic_detect_changes()] send_static = 0, send_dynamic = 0
+[c_generic.c:1454 decide_state()] no STATIC nor DYNAMIC field changed in the last few packets, so stay in SO state
+[c_generic.c:6426 encode_uncomp_fields()] compressor is in state 3
+[c_generic.c:6431 encode_uncomp_fields()] new SN = 19863 / 0x4d97
+[c_generic.c:6454 encode_uncomp_fields()] 2 bits are required to encode new SN
+[c_generic.c:6475 encode_uncomp_fields()] new outer IP-ID delta = 0xb269 / 45673 (NBO = 1, RND = 0, SID = 1)
+[c_generic.c:6490 encode_uncomp_fields()] outer IP-ID is constant, no IP-ID bit to transmit
+[c_generic.c:6506 encode_uncomp_fields()] 0 bits are required to encode new outer IP-ID delta
+[c_generic.c:1520 decide_packet()] decide packet in SO state
+[c_ip.c:331 c_ip_decide_SO_packet()] nr_ip_bits = 0, nr_sn_bits = 2, nr_of_ip_hdr = 1, rnd = 0
+[c_ip.c:350 c_ip_decide_SO_packet()] choose packet UO-0 because 2 <= 4 SN bits must be transmitted, and the single IP header is either 'non-IPv4' or 'IPv4 with random IP-ID' or 'IPv4 with non-random IP-ID but 0 IP-ID bit to transmit'
+[c_generic.c:1542 decide_packet()] packet 'UO-0' chosen
+[c_generic.c:2656 code_UO0_packet()] code UO-0 packet (CID = 0)
+[c_generic.c:2675 code_UO0_packet()] small CID 0 encoded on 0 byte(s)
+[c_generic.c:2691 code_UO0_packet()] first byte = 0x3d (CRC = 0x5)
+[rohc_comp.c:1563 rohc_compress4()] copy full 18-byte payload
+[rohc_comp.c:1573 rohc_compress4()] ROHC size = 19 bytes (header = 1, payload = 18), output buffer size = 2048
+destroy the ROHC compressor
+-----------------------
+Sent a packet
+Waiting for feedback
+listener: waiting to recvfrom...
+listener: got packet from 192.168.0.101
+listener: packet is 7 bytes long
+00000   f6 20 4d 41 8f 19 50                                . MA..P
+---------------
+[rohc_comp.c:3954 rohc_comp_deliver_feedback2()] deliver 7 byte(s) of feedback to the right context
+[rohc_comp.c:3982 rohc_comp_deliver_feedback2()] feedback found (header = 1 bytes, data = 6 bytes)
+[rohc_comp.c:3782 __rohc_comp_deliver_feedback()] deliver 6 byte(s) of feedback to the right context
+[rohc_comp.c:3819 __rohc_comp_deliver_feedback()] feedback CID = 0
+[rohc_comp.c:3823 __rohc_comp_deliver_feedback()] feedback size = 6
+[c_generic.c:975 c_generic_feedback()] FEEDBACK-2 received
+[c_generic.c:1046 c_generic_feedback_2()] 2-byte FEEDBACK-2 is too short for 10-byte option 1
+[c_generic.c:979 c_generic_feedback()] failed to handle FEEDBACK-2
+[rohc_comp.c:3863 __rohc_comp_deliver_feedback()] failed to handle FEEDBACK-2 data
+[rohc_comp.c:4001 rohc_comp_deliver_feedback2()] failed to deliver feedback item #1
+Feedback unsuccessfully delivered
+Will compress one single IPv4 packet and broadcast it
+build a fake IP packet
+compress the fake IP packet
+[net_pkt.c:75 net_pkt_parse()] outer IP header: 38 bytes
+[net_pkt.c:77 net_pkt_parse()] outer IP header: version 4
+[net_pkt.c:82 net_pkt_parse()] outer IP header: next header is of type 134
+[net_pkt.c:87 net_pkt_parse()] outer IP header: next layer is of type 134
+[rohc_comp.c:4608 c_get_profile_from_packet()] try to find the best profile for packet with transport protocol 134
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/UDP/RTP' (0x0001)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/UDP' (0x0002)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/UDP-Lite' (0x0008)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/ESP' (0x0003)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/TCP' (0x0006)
+[rohc_comp.c:4813 rohc_comp_find_ctxt()] using profile 'IP-only' (0x0004)
+[rohc_comp.c:4843 rohc_comp_find_ctxt()] using context CID = 0
+[rohc_comp.c:1435 rohc_compress4()] compress the packet #10
+[c_generic.c:1217 c_generic_detect_changes()] SN = 19864
+[c_generic.c:6309 detect_ip_id_behaviour()] 1) old_id = 0x0000 new_id = 0x0000
+[c_generic.c:6314 detect_ip_id_behaviour()] IP-ID is constant (SID detected)
+[c_generic.c:6356 detect_ip_id_behaviour()] NBO = 1, RND = 0, SID = 1
+[c_generic.c:5931 changed_dynamic_both_hdr()] check for changed fields in the outer IP header
+[c_generic.c:1282 c_generic_detect_changes()] send_static = 0, send_dynamic = 0
+[c_generic.c:1454 decide_state()] no STATIC nor DYNAMIC field changed in the last few packets, so stay in SO state
+[c_generic.c:6426 encode_uncomp_fields()] compressor is in state 3
+[c_generic.c:6431 encode_uncomp_fields()] new SN = 19864 / 0x4d98
+[c_generic.c:6454 encode_uncomp_fields()] 2 bits are required to encode new SN
+[c_generic.c:6475 encode_uncomp_fields()] new outer IP-ID delta = 0xb268 / 45672 (NBO = 1, RND = 0, SID = 1)
+[c_generic.c:6490 encode_uncomp_fields()] outer IP-ID is constant, no IP-ID bit to transmit
+[c_generic.c:6506 encode_uncomp_fields()] 0 bits are required to encode new outer IP-ID delta
+[c_generic.c:1520 decide_packet()] decide packet in SO state
+[c_ip.c:331 c_ip_decide_SO_packet()] nr_ip_bits = 0, nr_sn_bits = 2, nr_of_ip_hdr = 1, rnd = 0
+[c_ip.c:350 c_ip_decide_SO_packet()] choose packet UO-0 because 2 <= 4 SN bits must be transmitted, and the single IP header is either 'non-IPv4' or 'IPv4 with random IP-ID' or 'IPv4 with non-random IP-ID but 0 IP-ID bit to transmit'
+[c_generic.c:1542 decide_packet()] packet 'UO-0' chosen
+[c_generic.c:2656 code_UO0_packet()] code UO-0 packet (CID = 0)
+[c_generic.c:2675 code_UO0_packet()] small CID 0 encoded on 0 byte(s)
+[c_generic.c:2691 code_UO0_packet()] first byte = 0x45 (CRC = 0x5)
+[rohc_comp.c:1563 rohc_compress4()] copy full 18-byte payload
+[rohc_comp.c:1573 rohc_compress4()] ROHC size = 19 bytes (header = 1, payload = 18), output buffer size = 2048
+destroy the ROHC compressor
+-----------------------
+Sent a packet
+Waiting for feedback
+listener: waiting to recvfrom...
+listener: got packet from 192.168.0.101
+listener: packet is 7 bytes long
+00000   f6 20 4d 41 8f 1a 50                                . MA..P
+---------------
+[rohc_comp.c:3954 rohc_comp_deliver_feedback2()] deliver 7 byte(s) of feedback to the right context
+[rohc_comp.c:3982 rohc_comp_deliver_feedback2()] feedback found (header = 1 bytes, data = 6 bytes)
+[rohc_comp.c:3782 __rohc_comp_deliver_feedback()] deliver 6 byte(s) of feedback to the right context
+[rohc_comp.c:3819 __rohc_comp_deliver_feedback()] feedback CID = 0
+[rohc_comp.c:3823 __rohc_comp_deliver_feedback()] feedback size = 6
+[c_generic.c:975 c_generic_feedback()] FEEDBACK-2 received
+[c_generic.c:1046 c_generic_feedback_2()] 2-byte FEEDBACK-2 is too short for 11-byte option 1
+[c_generic.c:979 c_generic_feedback()] failed to handle FEEDBACK-2
+[rohc_comp.c:3863 __rohc_comp_deliver_feedback()] failed to handle FEEDBACK-2 data
+[rohc_comp.c:4001 rohc_comp_deliver_feedback2()] failed to deliver feedback item #1
+Feedback unsuccessfully delivered
+Will compress one single IPv4 packet and broadcast it
+build a fake IP packet
+compress the fake IP packet
+[net_pkt.c:75 net_pkt_parse()] outer IP header: 38 bytes
+[net_pkt.c:77 net_pkt_parse()] outer IP header: version 4
+[net_pkt.c:82 net_pkt_parse()] outer IP header: next header is of type 134
+[net_pkt.c:87 net_pkt_parse()] outer IP header: next layer is of type 134
+[rohc_comp.c:4608 c_get_profile_from_packet()] try to find the best profile for packet with transport protocol 134
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/UDP/RTP' (0x0001)
+[rohc_comp.c:4621 c_get_profile_from_packet()] skip disabled profile 'IP/UDP' (0x000

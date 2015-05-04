@@ -1,1 +1,1 @@
-gcc -o compressedBroadcast -g -Wall $(pkg-config rohc --cflags) compressedBroadcast.c $(pkg-config rohc --libs )
+gcc -o CompressorSend -g -Wall $(pkg-config rohc --cflags) CompressorSend.c $(pkg-config rohc --libs )
