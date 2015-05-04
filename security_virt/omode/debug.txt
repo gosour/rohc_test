@@ -1,0 +1,556 @@
+Attack using replay attack
+
+create the ROHC decompressor
+
+enable several ROHC decompression profiles
+please define a callback for decompressor traces
+[rohc_decomp.c:3424 rohc_decomp_enable_profile()] ROHC decompression profile (ID = 0) enabled
+[rohc_decomp.c:3424 rohc_decomp_enable_profile()] ROHC decompression profile (ID = 4) enabled
+[rohc_decomp.c:3424 rohc_decomp_enable_profile()] ROHC decompression profile (ID = 2) enabled
+[rohc_decomp.c:3424 rohc_decomp_enable_profile()] ROHC decompression profile (ID = 8) enabled
+Device: eth0
+Number of packets: 10
+Filter expression: host 192.168.0.100 and port 3490
+
+Packet number 1:
+       From: 192.168.0.100
+         To: 192.168.0.102
+   Protocol: UDP
+   Src port: 39156
+   Dst port: 3490
+   Payload (39 bytes):
+00000   fd 04 8d 40 86 01 02 03  04 05 06 07 08 00 01 00    ...@............
+00016   00 20 00 4d 8f 68 65 6c  6c 6f 2c 20 52 4f 48 43    . .M.hello, ROHC
+00032   20 77 6f 72 6c 64 21                                 world!
+Attempting to Decompress, IN O_MODE
+
+decompress the fake ROHC packet
+[rohc_decomp.c:1359 rohc_decompress3()] decompress the 39-byte packet #1
+[rohc_decomp.c:3895 rohc_decomp_parse_padding()] skip 0 byte(s) of padding
+[rohc_decomp.c:1751 d_decode_header()] decompressor received 0 bytes of feedback for the same-side associated compressor
+[rohc_decomp.c:3831 rohc_decomp_decode_cid()] no add-CID found, CID defaults to 0
+[rohc_decomp.c:1890 d_decode_header()] ROHC packet is an IR packet
+[rohc_decomp.c:1912 d_decode_header()] profile with ID 0x0004 found in IR packet
+[rohc_decomp.c:1931 d_decode_header()] context with CID 0 either does not already exist or does not match profile 0x0004 found in IR packet
+[rohc_decomp.c:2032 d_decode_header()] decode packet as 'IR'
+[d_generic.c:778 parse_ir()] CRC-8 found in packet = 0x8d
+[d_generic.c:1034 parse_static_part_ipv4()] IP Version = 4
+[d_generic.c:1041 parse_static_part_ipv4()] Protocol = 0x86
+[d_generic.c:1049 parse_static_part_ipv4()] Source Address = 01020304 (1.2.3.4)
+[d_generic.c:1057 parse_static_part_ipv4()] Destination Address = 05060708 (5.6.7.8)
+[d_generic.c:1236 parse_dynamic_part_ipv4()] TOS = 0x00
+[d_generic.c:1243 parse_dynamic_part_ipv4()] TTL = 0x01
+[d_generic.c:1251 parse_dynamic_part_ipv4()] IP-ID = 0x0000
+[d_generic.c:1272 parse_dynamic_part_ipv4()] DF = 0, RND = 0, NBO = 1, SID = 0
+[d_ip.c:218 ip_parse_dynamic_ip()] SN = 19855 (0x4d8f)
+[d_generic.c:1447 d_generic_decode()] ROHC payload (length = 18 bytes) starts at offset 21
+[d_generic.c:5707 check_ir_crc()] CRC-8 on compressed 21-byte ROHC header = 0x8d
+[d_generic.c:6039 decode_values_from_bits()] decoded SN = 19855 / 0x4d8f (nr bits = 16, bits = 19855 / 0x4d8f)
+[d_generic.c:6209 decode_ip_values_from_bits()] decoded outer TOS/TC = 0
+[d_generic.c:6222 decode_ip_values_from_bits()] decoded outer TTL/HL = 1
+[d_generic.c:6236 decode_ip_values_from_bits()] decoded outer protocol/NH = 134
+[d_generic.c:6252 decode_ip_values_from_bits()] decoded outer NBO = 1
+[d_generic.c:6265 decode_ip_values_from_bits()] decoded outer RND = 0
+[d_generic.c:6278 decode_ip_values_from_bits()] decoded outer SID = 0
+[d_generic.c:6337 decode_ip_values_from_bits()] decoded outer IP-ID = 0x0000 (rnd = 0, nbo = 1, sid = 0, nr bits = 16, bits = 0x0)
+[d_generic.c:6350 decode_ip_values_from_bits()] decoded outer DF = 0
+[d_generic.c:6366 decode_ip_values_from_bits()] decoded outer src address = 01020304 (1.2.3.4)
+[d_generic.c:6382 decode_ip_values_from_bits()] decoded outer dst address = 05060708 (5.6.7.8)
+[d_generic.c:5405 build_uncomp_hdrs()] length of transport header = 0 bytes
+[d_generic.c:5563 build_uncomp_ipv4()] Total Length = 0x0026 (IHL * 4 + 18)
+[d_generic.c:5567 build_uncomp_ipv4()] IP checksum = 0xa93f
+[d_generic.c:1532 d_generic_decode()] CRC is correct
+[d_generic.c:1671 d_generic_decode()] uncompressed packet length = 38 bytes
+[d_generic.c:1687 d_generic_decode()] change from state 1 to state 3
+[rohc_decomp.c:1376 rohc_decompress3()] d_decode_header returned code 0
+[rohc_decomp.c:1494 rohc_decompress3()] packet decompression succeeded
+[rohc_decomp.c:1515 rohc_decompress3()] feedback curr -12
+[rohc_decomp.c:1525 rohc_decompress3()] feedback curr 0
+[rohc_decomp.c:2197 d_optimistic_feedback()] send an ACK feedback
+IP packet resulted from the ROHC decompression:
+YOYOYOYO WE GOT ONE FRESHLY BAKED FEEDBACK
+-----------------------
+Sent a feedback of length: 7
+00000   f6 20 4d 41 8f 11 50                                . MA..P
+-----------------------
+
+Packet number 2:
+       From: 192.168.0.100
+         To: 192.168.0.102
+   Protocol: UDP
+   Src port: 46261
+   Dst port: 3490
+   Payload (39 bytes):
+00000   fd 04 e7 40 86 01 02 03  04 05 06 07 08 00 01 00    ...@............
+00016   00 30 00 4d 90 68 65 6c  6c 6f 2c 20 52 4f 48 43    .0.M.hello, ROHC
+00032   20 77 6f 72 6c 64 21                                 world!
+Attempting to Decompress, IN O_MODE
+
+decompress the fake ROHC packet
+[rohc_decomp.c:1359 rohc_decompress3()] decompress the 39-byte packet #2
+[rohc_decomp.c:3895 rohc_decomp_parse_padding()] skip 0 byte(s) of padding
+[rohc_decomp.c:1751 d_decode_header()] decompressor received 0 bytes of feedback for the same-side associated compressor
+[rohc_decomp.c:3831 rohc_decomp_decode_cid()] no add-CID found, CID defaults to 0
+[rohc_decomp.c:1890 d_decode_header()] ROHC packet is an IR packet
+[rohc_decomp.c:1912 d_decode_header()] profile with ID 0x0004 found in IR packet
+[rohc_decomp.c:1921 d_decode_header()] context with CID 0 already exists and matches profile 0x0004 found in IR packet
+[rohc_decomp.c:2032 d_decode_header()] decode packet as 'IR'
+[d_generic.c:778 parse_ir()] CRC-8 found in packet = 0xe7
+[d_generic.c:1034 parse_static_part_ipv4()] IP Version = 4
+[d_generic.c:1041 parse_static_part_ipv4()] Protocol = 0x86
+[d_generic.c:1049 parse_static_part_ipv4()] Source Address = 01020304 (1.2.3.4)
+[d_generic.c:1057 parse_static_part_ipv4()] Destination Address = 05060708 (5.6.7.8)
+[d_generic.c:1236 parse_dynamic_part_ipv4()] TOS = 0x00
+[d_generic.c:1243 parse_dynamic_part_ipv4()] TTL = 0x01
+[d_generic.c:1251 parse_dynamic_part_ipv4()] IP-ID = 0x0000
+[d_generic.c:1272 parse_dynamic_part_ipv4()] DF = 0, RND = 0, NBO = 1, SID = 1
+[d_ip.c:218 ip_parse_dynamic_ip()] SN = 19856 (0x4d90)
+[d_generic.c:1447 d_generic_decode()] ROHC payload (length = 18 bytes) starts at offset 21
+[d_generic.c:5707 check_ir_crc()] CRC-8 on compressed 21-byte ROHC header = 0xe7
+[d_generic.c:6039 decode_values_from_bits()] decoded SN = 19856 / 0x4d90 (nr bits = 16, bits = 19856 / 0x4d90)
+[d_generic.c:6209 decode_ip_values_from_bits()] decoded outer TOS/TC = 0
+[d_generic.c:6222 decode_ip_values_from_bits()] decoded outer TTL/HL = 1
+[d_generic.c:6236 decode_ip_values_from_bits()] decoded outer protocol/NH = 134
+[d_generic.c:6252 decode_ip_values_from_bits()] decoded outer NBO = 1
+[d_generic.c:6265 decode_ip_values_from_bits()] decoded outer RND = 0
+[d_generic.c:6278 decode_ip_values_from_bits()] decoded outer SID = 1
+[d_generic.c:6337 decode_ip_values_from_bits()] decoded outer IP-ID = 0x0000 (rnd = 0, nbo = 1, sid = 1, nr bits = 16, bits = 0x0)
+[d_generic.c:6350 decode_ip_values_from_bits()] decoded outer DF = 0
+[d_generic.c:6366 decode_ip_values_from_bits()] decoded outer src address = 01020304 (1.2.3.4)
+[d_generic.c:6382 decode_ip_values_from_bits()] decoded outer dst address = 05060708 (5.6.7.8)
+[d_generic.c:5405 build_uncomp_hdrs()] length of transport header = 0 bytes
+[d_generic.c:5563 build_uncomp_ipv4()] Total Length = 0x0026 (IHL * 4 + 18)
+[d_generic.c:5567 build_uncomp_ipv4()] IP checksum = 0xa93f
+[d_generic.c:1532 d_generic_decode()] CRC is correct
+[d_generic.c:1671 d_generic_decode()] uncompressed packet length = 38 bytes
+[rohc_decomp.c:1376 rohc_decompress3()] d_decode_header returned code 0
+[rohc_decomp.c:1494 rohc_decompress3()] packet decompression succeeded
+[rohc_decomp.c:1515 rohc_decompress3()] feedback curr -12
+[rohc_decomp.c:1525 rohc_decompress3()] feedback curr 0
+IP packet resulted from the ROHC decompression:
+NO FEEDBACK TO SEND, WHATDO?
+-----------------------
+Sent a feedback of length: 7
+00000   f6 20 4d 41 8f 12 50                                . MA..P
+-----------------------
+
+Packet number 3:
+       From: 192.168.0.100
+         To: 192.168.0.102
+   Protocol: UDP
+   Src port: 59194
+   Dst port: 3490
+   Payload (39 bytes):
+00000   fd 04 76 40 86 01 02 03  04 05 06 07 08 00 01 00    ..v@............
+00016   00 30 00 4d 91 68 65 6c  6c 6f 2c 20 52 4f 48 43    .0.M.hello, ROHC
+00032   20 77 6f 72 6c 64 21                                 world!
+Attempting to Decompress, IN O_MODE
+
+decompress the fake ROHC packet
+[rohc_decomp.c:1359 rohc_decompress3()] decompress the 39-byte packet #3
+[rohc_decomp.c:3895 rohc_decomp_parse_padding()] skip 0 byte(s) of padding
+[rohc_decomp.c:1751 d_decode_header()] decompressor received 0 bytes of feedback for the same-side associated compressor
+[rohc_decomp.c:3831 rohc_decomp_decode_cid()] no add-CID found, CID defaults to 0
+[rohc_decomp.c:1890 d_decode_header()] ROHC packet is an IR packet
+[rohc_decomp.c:1912 d_decode_header()] profile with ID 0x0004 found in IR packet
+[rohc_decomp.c:1921 d_decode_header()] context with CID 0 already exists and matches profile 0x0004 found in IR packet
+[rohc_decomp.c:2032 d_decode_header()] decode packet as 'IR'
+[d_generic.c:778 parse_ir()] CRC-8 found in packet = 0x76
+[d_generic.c:1034 parse_static_part_ipv4()] IP Version = 4
+[d_generic.c:1041 parse_static_part_ipv4()] Protocol = 0x86
+[d_generic.c:1049 parse_static_part_ipv4()] Source Address = 01020304 (1.2.3.4)
+[d_generic.c:1057 parse_static_part_ipv4()] Destination Address = 05060708 (5.6.7.8)
+[d_generic.c:1236 parse_dynamic_part_ipv4()] TOS = 0x00
+[d_generic.c:1243 parse_dynamic_part_ipv4()] TTL = 0x01
+[d_generic.c:1251 parse_dynamic_part_ipv4()] IP-ID = 0x0000
+[d_generic.c:1272 parse_dynamic_part_ipv4()] DF = 0, RND = 0, NBO = 1, SID = 1
+[d_ip.c:218 ip_parse_dynamic_ip()] SN = 19857 (0x4d91)
+[d_generic.c:1447 d_generic_decode()] ROHC payload (length = 18 bytes) starts at offset 21
+[d_generic.c:5707 check_ir_crc()] CRC-8 on compressed 21-byte ROHC header = 0x76
+[d_generic.c:6039 decode_values_from_bits()] decoded SN = 19857 / 0x4d91 (nr bits = 16, bits = 19857 / 0x4d91)
+[d_generic.c:6209 decode_ip_values_from_bits()] decoded outer TOS/TC = 0
+[d_generic.c:6222 decode_ip_values_from_bits()] decoded outer TTL/HL = 1
+[d_generic.c:6236 decode_ip_values_from_bits()] decoded outer protocol/NH = 134
+[d_generic.c:6252 decode_ip_values_from_bits()] decoded outer NBO = 1
+[d_generic.c:6265 decode_ip_values_from_bits()] decoded outer RND = 0
+[d_generic.c:6278 decode_ip_values_from_bits()] decoded outer SID = 1
+[d_generic.c:6337 decode_ip_values_from_bits()] decoded outer IP-ID = 0x0000 (rnd = 0, nbo = 1, sid = 1, nr bits = 16, bits = 0x0)
+[d_generic.c:6350 decode_ip_values_from_bits()] decoded outer DF = 0
+[d_generic.c:6366 decode_ip_values_from_bits()] decoded outer src address = 01020304 (1.2.3.4)
+[d_generic.c:6382 decode_ip_values_from_bits()] decoded outer dst address = 05060708 (5.6.7.8)
+[d_generic.c:5405 build_uncomp_hdrs()] length of transport header = 0 bytes
+[d_generic.c:5563 build_uncomp_ipv4()] Total Length = 0x0026 (IHL * 4 + 18)
+[d_generic.c:5567 build_uncomp_ipv4()] IP checksum = 0xa93f
+[d_generic.c:1532 d_generic_decode()] CRC is correct
+[d_generic.c:1671 d_generic_decode()] uncompressed packet length = 38 bytes
+[rohc_decomp.c:1376 rohc_decompress3()] d_decode_header returned code 0
+[rohc_decomp.c:1494 rohc_decompress3()] packet decompression succeeded
+[rohc_decomp.c:1515 rohc_decompress3()] feedback curr -12
+[rohc_decomp.c:1525 rohc_decompress3()] feedback curr 0
+IP packet resulted from the ROHC decompression:
+NO FEEDBACK TO SEND, WHATDO?
+-----------------------
+Sent a feedback of length: 7
+00000   f6 20 4d 41 8f 13 50                                . MA..P
+-----------------------
+
+Packet number 4:
+       From: 192.168.0.100
+         To: 192.168.0.102
+   Protocol: UDP
+   Src port: 37876
+   Dst port: 3490
+   Payload (29 bytes):
+00000   f8 04 b2 00 01 00 00 30  00 4d 92 68 65 6c 6c 6f    .......0.M.hello
+00016   2c 20 52 4f 48 43 20 77  6f 72 6c 64 21             , ROHC world!
+Attempting to Decompress, IN O_MODE
+
+decompress the fake ROHC packet
+[rohc_decomp.c:1359 rohc_decompress3()] decompress the 29-byte packet #4
+[rohc_decomp.c:3895 rohc_decomp_parse_padding()] skip 0 byte(s) of padding
+[rohc_decomp.c:1751 d_decode_header()] decompressor received 0 bytes of feedback for the same-side associated compressor
+[rohc_decomp.c:3831 rohc_decomp_decode_cid()] no add-CID found, CID defaults to 0
+[rohc_decomp.c:1951 d_decode_header()] ROHC packet is not an IR packet
+[rohc_decomp.c:1966 d_decode_header()] context with CID 0 found
+[rohc_decomp.c:1974 d_decode_header()] ROHC packet is an IR-DYN packet
+[rohc_decomp.c:2032 d_decode_header()] decode packet as 'IR-DYN'
+[d_generic.c:4852 parse_irdyn()] CRC-8 found in packet = 0xb2
+[d_generic.c:1236 parse_dynamic_part_ipv4()] TOS = 0x00
+[d_generic.c:1243 parse_dynamic_part_ipv4()] TTL = 0x01
+[d_generic.c:1251 parse_dynamic_part_ipv4()] IP-ID = 0x0000
+[d_generic.c:1272 parse_dynamic_part_ipv4()] DF = 0, RND = 0, NBO = 1, SID = 1
+[d_ip.c:218 ip_parse_dynamic_ip()] SN = 19858 (0x4d92)
+[d_generic.c:1447 d_generic_decode()] ROHC payload (length = 18 bytes) starts at offset 11
+[d_generic.c:5707 check_ir_crc()] CRC-8 on compressed 11-byte ROHC header = 0xb2
+[d_generic.c:6039 decode_values_from_bits()] decoded SN = 19858 / 0x4d92 (nr bits = 16, bits = 19858 / 0x4d92)
+[d_generic.c:6209 decode_ip_values_from_bits()] decoded outer TOS/TC = 0
+[d_generic.c:6222 decode_ip_values_from_bits()] decoded outer TTL/HL = 1
+[d_generic.c:6236 decode_ip_values_from_bits()] decoded outer protocol/NH = 134
+[d_generic.c:6252 decode_ip_values_from_bits()] decoded outer NBO = 1
+[d_generic.c:6265 decode_ip_values_from_bits()] decoded outer RND = 0
+[d_generic.c:6278 decode_ip_values_from_bits()] decoded outer SID = 1
+[d_generic.c:6337 decode_ip_values_from_bits()] decoded outer IP-ID = 0x0000 (rnd = 0, nbo = 1, sid = 1, nr bits = 16, bits = 0x0)
+[d_generic.c:6350 decode_ip_values_from_bits()] decoded outer DF = 0
+[d_generic.c:6366 decode_ip_values_from_bits()] decoded outer src address = 01020304 (1.2.3.4)
+[d_generic.c:6382 decode_ip_values_from_bits()] decoded outer dst address = 05060708 (5.6.7.8)
+[d_generic.c:5405 build_uncomp_hdrs()] length of transport header = 0 bytes
+[d_generic.c:5563 build_uncomp_ipv4()] Total Length = 0x0026 (IHL * 4 + 18)
+[d_generic.c:5567 build_uncomp_ipv4()] IP checksum = 0xa93f
+[d_generic.c:1532 d_generic_decode()] CRC is correct
+[d_generic.c:1671 d_generic_decode()] uncompressed packet length = 38 bytes
+[rohc_decomp.c:1376 rohc_decompress3()] d_decode_header returned code 0
+[rohc_decomp.c:1494 rohc_decompress3()] packet decompression succeeded
+[rohc_decomp.c:1515 rohc_decompress3()] feedback curr -12
+[rohc_decomp.c:1525 rohc_decompress3()] feedback curr 0
+IP packet resulted from the ROHC decompression:
+NO FEEDBACK TO SEND, WHATDO?
+-----------------------
+Sent a feedback of length: 7
+00000   f6 20 4d 41 8f 14 50                                . MA..P
+-----------------------
+
+Packet number 5:
+       From: 192.168.0.100
+         To: 192.168.0.102
+   Protocol: UDP
+   Src port: 33257
+   Dst port: 3490
+   Payload (20 bytes):
+00000   d3 74 68 65 6c 6c 6f 2c  20 52 4f 48 43 20 77 6f    .thello, ROHC wo
+00016   72 6c 64 21                                         rld!
+Attempting to Decompress, IN O_MODE
+
+decompress the fake ROHC packet
+[rohc_decomp.c:1359 rohc_decompress3()] decompress the 20-byte packet #5
+[rohc_decomp.c:3895 rohc_decomp_parse_padding()] skip 0 byte(s) of padding
+[rohc_decomp.c:1751 d_decode_header()] decompressor received 0 bytes of feedback for the same-side associated compressor
+[rohc_decomp.c:3831 rohc_decomp_decode_cid()] no add-CID found, CID defaults to 0
+[rohc_decomp.c:1951 d_decode_header()] ROHC packet is not an IR packet
+[rohc_decomp.c:1966 d_decode_header()] context with CID 0 found
+[rohc_decomp.c:2032 d_decode_header()] decode packet as 'UOR-2'
+[d_generic.c:3027 parse_uor2()] 5 SN bits = 0x13
+[d_generic.c:3039 parse_uor2()] extension is present = 0
+[d_generic.c:3044 parse_uor2()] CRC-7 found in packet = 0x74
+[d_generic.c:3053 parse_uor2()] no extension to decode in UOR-2 packet
+[d_generic.c:1447 d_generic_decode()] ROHC payload (length = 18 bytes) starts at offset 2
+[d_generic.c:6039 decode_values_from_bits()] decoded SN = 19859 / 0x4d93 (nr bits = 5, bits = 19 / 0x13)
+[d_generic.c:6209 decode_ip_values_from_bits()] decoded outer TOS/TC = 0
+[d_generic.c:6222 decode_ip_values_from_bits()] decoded outer TTL/HL = 1
+[d_generic.c:6236 decode_ip_values_from_bits()] decoded outer protocol/NH = 134
+[d_generic.c:6252 decode_ip_values_from_bits()] decoded outer NBO = 1
+[d_generic.c:6265 decode_ip_values_from_bits()] decoded outer RND = 0
+[d_generic.c:6278 decode_ip_values_from_bits()] decoded outer SID = 1
+[d_generic.c:6337 decode_ip_values_from_bits()] decoded outer IP-ID = 0x0000 (rnd = 0, nbo = 1, sid = 1, nr bits = 0, bits = 0x0)
+[d_generic.c:6350 decode_ip_values_from_bits()] decoded outer DF = 0
+[d_generic.c:6366 decode_ip_values_from_bits()] decoded outer src address = 01020304 (1.2.3.4)
+[d_generic.c:6382 decode_ip_values_from_bits()] decoded outer dst address = 05060708 (5.6.7.8)
+[d_generic.c:5405 build_uncomp_hdrs()] length of transport header = 0 bytes
+[d_generic.c:5563 build_uncomp_ipv4()] Total Length = 0x0026 (IHL * 4 + 18)
+[d_generic.c:5567 build_uncomp_ipv4()] IP checksum = 0xa93f
+[d_generic.c:5789 check_uncomp_crc()] CRC-7 on uncompressed header = 0x74
+[d_generic.c:1532 d_generic_decode()] CRC is correct
+[d_generic.c:1671 d_generic_decode()] uncompressed packet length = 38 bytes
+[rohc_decomp.c:1376 rohc_decompress3()] d_decode_header returned code 0
+[rohc_decomp.c:1494 rohc_decompress3()] packet decompression succeeded
+[rohc_decomp.c:1515 rohc_decompress3()] feedback curr -12
+[rohc_decomp.c:1525 rohc_decompress3()] feedback curr 0
+IP packet resulted from the ROHC decompression:
+NO FEEDBACK TO SEND, WHATDO?
+-----------------------
+Sent a feedback of length: 7
+00000   f6 20 4d 41 8f 15 50                                . MA..P
+-----------------------
+
+Packet number 6:
+       From: 192.168.0.100
+         To: 192.168.0.102
+   Protocol: UDP
+   Src port: 43531
+   Dst port: 3490
+   Payload (20 bytes):
+00000   d4 74 68 65 6c 6c 6f 2c  20 52 4f 48 43 20 77 6f    .thello, ROHC wo
+00016   72 6c 64 21                                         rld!
+Attempting to Decompress, IN O_MODE
+
+decompress the fake ROHC packet
+[rohc_decomp.c:1359 rohc_decompress3()] decompress the 20-byte packet #6
+[rohc_decomp.c:3895 rohc_decomp_parse_padding()] skip 0 byte(s) of padding
+[rohc_decomp.c:1751 d_decode_header()] decompressor received 0 bytes of feedback for the same-side associated compressor
+[rohc_decomp.c:3831 rohc_decomp_decode_cid()] no add-CID found, CID defaults to 0
+[rohc_decomp.c:1951 d_decode_header()] ROHC packet is not an IR packet
+[rohc_decomp.c:1966 d_decode_header()] context with CID 0 found
+[rohc_decomp.c:2032 d_decode_header()] decode packet as 'UOR-2'
+[d_generic.c:3027 parse_uor2()] 5 SN bits = 0x14
+[d_generic.c:3039 parse_uor2()] extension is present = 0
+[d_generic.c:3044 parse_uor2()] CRC-7 found in packet = 0x74
+[d_generic.c:3053 parse_uor2()] no extension to decode in UOR-2 packet
+[d_generic.c:1447 d_generic_decode()] ROHC payload (length = 18 bytes) starts at offset 2
+[d_generic.c:6039 decode_values_from_bits()] decoded SN = 19860 / 0x4d94 (nr bits = 5, bits = 20 / 0x14)
+[d_generic.c:6209 decode_ip_values_from_bits()] decoded outer TOS/TC = 0
+[d_generic.c:6222 decode_ip_values_from_bits()] decoded outer TTL/HL = 1
+[d_generic.c:6236 decode_ip_values_from_bits()] decoded outer protocol/NH = 134
+[d_generic.c:6252 decode_ip_values_from_bits()] decoded outer NBO = 1
+[d_generic.c:6265 decode_ip_values_from_bits()] decoded outer RND = 0
+[d_generic.c:6278 decode_ip_values_from_bits()] decoded outer SID = 1
+[d_generic.c:6337 decode_ip_values_from_bits()] decoded outer IP-ID = 0x0000 (rnd = 0, nbo = 1, sid = 1, nr bits = 0, bits = 0x0)
+[d_generic.c:6350 decode_ip_values_from_bits()] decoded outer DF = 0
+[d_generic.c:6366 decode_ip_values_from_bits()] decoded outer src address = 01020304 (1.2.3.4)
+[d_generic.c:6382 decode_ip_values_from_bits()] decoded outer dst address = 05060708 (5.6.7.8)
+[d_generic.c:5405 build_uncomp_hdrs()] length of transport header = 0 bytes
+[d_generic.c:5563 build_uncomp_ipv4()] Total Length = 0x0026 (IHL * 4 + 18)
+[d_generic.c:5567 build_uncomp_ipv4()] IP checksum = 0xa93f
+[d_generic.c:5789 check_uncomp_crc()] CRC-7 on uncompressed header = 0x74
+[d_generic.c:1532 d_generic_decode()] CRC is correct
+[d_generic.c:1671 d_generic_decode()] uncompressed packet length = 38 bytes
+[rohc_decomp.c:1376 rohc_decompress3()] d_decode_header returned code 0
+[rohc_decomp.c:1494 rohc_decompress3()] packet decompression succeeded
+[rohc_decomp.c:1515 rohc_decompress3()] feedback curr -12
+[rohc_decomp.c:1525 rohc_decompress3()] feedback curr 0
+IP packet resulted from the ROHC decompression:
+NO FEEDBACK TO SEND, WHATDO?
+-----------------------
+Sent a feedback of length: 7
+00000   f6 20 4d 41 8f 16 50                                . MA..P
+-----------------------
+
+Packet number 7:
+       From: 192.168.0.100
+         To: 192.168.0.102
+   Protocol: UDP
+   Src port: 49925
+   Dst port: 3490
+   Payload (19 bytes):
+00000   2d 68 65 6c 6c 6f 2c 20  52 4f 48 43 20 77 6f 72    -hello, ROHC wor
+00016   6c 64 21                                            ld!
+Attempting to Decompress, IN O_MODE
+
+decompress the fake ROHC packet
+[rohc_decomp.c:1359 rohc_decompress3()] decompress the 19-byte packet #7
+[rohc_decomp.c:3895 rohc_decomp_parse_padding()] skip 0 byte(s) of padding
+[rohc_decomp.c:1751 d_decode_header()] decompressor received 0 bytes of feedback for the same-side associated compressor
+[rohc_decomp.c:3831 rohc_decomp_decode_cid()] no add-CID found, CID defaults to 0
+[rohc_decomp.c:1951 d_decode_header()] ROHC packet is not an IR packet
+[rohc_decomp.c:1966 d_decode_header()] context with CID 0 found
+[rohc_decomp.c:2032 d_decode_header()] decode packet as 'UO-0'
+[d_generic.c:1875 parse_uo0()] 4 SN bits = 0x5
+[d_generic.c:1880 parse_uo0()] CRC-3 found in packet = 0x05
+[d_generic.c:1447 d_generic_decode()] ROHC payload (length = 18 bytes) starts at offset 1
+[d_generic.c:6039 decode_values_from_bits()] decoded SN = 19861 / 0x4d95 (nr bits = 4, bits = 5 / 0x5)
+[d_generic.c:6209 decode_ip_values_from_bits()] decoded outer TOS/TC = 0
+[d_generic.c:6222 decode_ip_values_from_bits()] decoded outer TTL/HL = 1
+[d_generic.c:6236 decode_ip_values_from_bits()] decoded outer protocol/NH = 134
+[d_generic.c:6252 decode_ip_values_from_bits()] decoded outer NBO = 1
+[d_generic.c:6265 decode_ip_values_from_bits()] decoded outer RND = 0
+[d_generic.c:6278 decode_ip_values_from_bits()] decoded outer SID = 1
+[d_generic.c:6337 decode_ip_values_from_bits()] decoded outer IP-ID = 0x0000 (rnd = 0, nbo = 1, sid = 1, nr bits = 0, bits = 0x0)
+[d_generic.c:6350 decode_ip_values_from_bits()] decoded outer DF = 0
+[d_generic.c:6366 decode_ip_values_from_bits()] decoded outer src address = 01020304 (1.2.3.4)
+[d_generic.c:6382 decode_ip_values_from_bits()] decoded outer dst address = 05060708 (5.6.7.8)
+[d_generic.c:5405 build_uncomp_hdrs()] length of transport header = 0 bytes
+[d_generic.c:5563 build_uncomp_ipv4()] Total Length = 0x0026 (IHL * 4 + 18)
+[d_generic.c:5567 build_uncomp_ipv4()] IP checksum = 0xa93f
+[d_generic.c:5789 check_uncomp_crc()] CRC-3 on uncompressed header = 0x5
+[d_generic.c:1532 d_generic_decode()] CRC is correct
+[d_generic.c:1671 d_generic_decode()] uncompressed packet length = 38 bytes
+[rohc_decomp.c:1376 rohc_decompress3()] d_decode_header returned code 0
+[rohc_decomp.c:1494 rohc_decompress3()] packet decompression succeeded
+[rohc_decomp.c:1515 rohc_decompress3()] feedback curr -12
+[rohc_decomp.c:1525 rohc_decompress3()] feedback curr 0
+IP packet resulted from the ROHC decompression:
+NO FEEDBACK TO SEND, WHATDO?
+-----------------------
+Sent a feedback of length: 7
+00000   f6 20 4d 41 8f 17 50                                . MA..P
+-----------------------
+
+Packet number 8:
+       From: 192.168.0.100
+         To: 192.168.0.102
+   Protocol: UDP
+   Src port: 42126
+   Dst port: 3490
+   Payload (19 bytes):
+00000   35 68 65 6c 6c 6f 2c 20  52 4f 48 43 20 77 6f 72    5hello, ROHC wor
+00016   6c 64 21                                            ld!
+Attempting to Decompress, IN O_MODE
+
+decompress the fake ROHC packet
+[rohc_decomp.c:1359 rohc_decompress3()] decompress the 19-byte packet #8
+[rohc_decomp.c:3895 rohc_decomp_parse_padding()] skip 0 byte(s) of padding
+[rohc_decomp.c:1751 d_decode_header()] decompressor received 0 bytes of feedback for the same-side associated compressor
+[rohc_decomp.c:3831 rohc_decomp_decode_cid()] no add-CID found, CID defaults to 0
+[rohc_decomp.c:1951 d_decode_header()] ROHC packet is not an IR packet
+[rohc_decomp.c:1966 d_decode_header()] context with CID 0 found
+[rohc_decomp.c:2032 d_decode_header()] decode packet as 'UO-0'
+[d_generic.c:1875 parse_uo0()] 4 SN bits = 0x6
+[d_generic.c:1880 parse_uo0()] CRC-3 found in packet = 0x05
+[d_generic.c:1447 d_generic_decode()] ROHC payload (length = 18 bytes) starts at offset 1
+[d_generic.c:6039 decode_values_from_bits()] decoded SN = 19862 / 0x4d96 (nr bits = 4, bits = 6 / 0x6)
+[d_generic.c:6209 decode_ip_values_from_bits()] decoded outer TOS/TC = 0
+[d_generic.c:6222 decode_ip_values_from_bits()] decoded outer TTL/HL = 1
+[d_generic.c:6236 decode_ip_values_from_bits()] decoded outer protocol/NH = 134
+[d_generic.c:6252 decode_ip_values_from_bits()] decoded outer NBO = 1
+[d_generic.c:6265 decode_ip_values_from_bits()] decoded outer RND = 0
+[d_generic.c:6278 decode_ip_values_from_bits()] decoded outer SID = 1
+[d_generic.c:6337 decode_ip_values_from_bits()] decoded outer IP-ID = 0x0000 (rnd = 0, nbo = 1, sid = 1, nr bits = 0, bits = 0x0)
+[d_generic.c:6350 decode_ip_values_from_bits()] decoded outer DF = 0
+[d_generic.c:6366 decode_ip_values_from_bits()] decoded outer src address = 01020304 (1.2.3.4)
+[d_generic.c:6382 decode_ip_values_from_bits()] decoded outer dst address = 05060708 (5.6.7.8)
+[d_generic.c:5405 build_uncomp_hdrs()] length of transport header = 0 bytes
+[d_generic.c:5563 build_uncomp_ipv4()] Total Length = 0x0026 (IHL * 4 + 18)
+[d_generic.c:5567 build_uncomp_ipv4()] IP checksum = 0xa93f
+[d_generic.c:5789 check_uncomp_crc()] CRC-3 on uncompressed header = 0x5
+[d_generic.c:1532 d_generic_decode()] CRC is correct
+[d_generic.c:1671 d_generic_decode()] uncompressed packet length = 38 bytes
+[rohc_decomp.c:1376 rohc_decompress3()] d_decode_header returned code 0
+[rohc_decomp.c:1494 rohc_decompress3()] packet decompression succeeded
+[rohc_decomp.c:1515 rohc_decompress3()] feedback curr -12
+[rohc_decomp.c:1525 rohc_decompress3()] feedback curr 0
+IP packet resulted from the ROHC decompression:
+NO FEEDBACK TO SEND, WHATDO?
+-----------------------
+Sent a feedback of length: 7
+00000   f6 20 4d 41 8f 18 50                                . MA..P
+-----------------------
+
+Packet number 9:
+       From: 192.168.0.100
+         To: 192.168.0.102
+   Protocol: UDP
+   Src port: 40494
+   Dst port: 3490
+   Payload (19 bytes):
+00000   3d 68 65 6c 6c 6f 2c 20  52 4f 48 43 20 77 6f 72    =hello, ROHC wor
+00016   6c 64 21                                            ld!
+Attempting to Decompress, IN O_MODE
+
+decompress the fake ROHC packet
+[rohc_decomp.c:1359 rohc_decompress3()] decompress the 19-byte packet #9
+[rohc_decomp.c:3895 rohc_decomp_parse_padding()] skip 0 byte(s) of padding
+[rohc_decomp.c:1751 d_decode_header()] decompressor received 0 bytes of feedback for the same-side associated compressor
+[rohc_decomp.c:3831 rohc_decomp_decode_cid()] no add-CID found, CID defaults to 0
+[rohc_decomp.c:1951 d_decode_header()] ROHC packet is not an IR packet
+[rohc_decomp.c:1966 d_decode_header()] context with CID 0 found
+[rohc_decomp.c:2032 d_decode_header()] decode packet as 'UO-0'
+[d_generic.c:1875 parse_uo0()] 4 SN bits = 0x7
+[d_generic.c:1880 parse_uo0()] CRC-3 found in packet = 0x05
+[d_generic.c:1447 d_generic_decode()] ROHC payload (length = 18 bytes) starts at offset 1
+[d_generic.c:6039 decode_values_from_bits()] decoded SN = 19863 / 0x4d97 (nr bits = 4, bits = 7 / 0x7)
+[d_generic.c:6209 decode_ip_values_from_bits()] decoded outer TOS/TC = 0
+[d_generic.c:6222 decode_ip_values_from_bits()] decoded outer TTL/HL = 1
+[d_generic.c:6236 decode_ip_values_from_bits()] decoded outer protocol/NH = 134
+[d_generic.c:6252 decode_ip_values_from_bits()] decoded outer NBO = 1
+[d_generic.c:6265 decode_ip_values_from_bits()] decoded outer RND = 0
+[d_generic.c:6278 decode_ip_values_from_bits()] decoded outer SID = 1
+[d_generic.c:6337 decode_ip_values_from_bits()] decoded outer IP-ID = 0x0000 (rnd = 0, nbo = 1, sid = 1, nr bits = 0, bits = 0x0)
+[d_generic.c:6350 decode_ip_values_from_bits()] decoded outer DF = 0
+[d_generic.c:6366 decode_ip_values_from_bits()] decoded outer src address = 01020304 (1.2.3.4)
+[d_generic.c:6382 decode_ip_values_from_bits()] decoded outer dst address = 05060708 (5.6.7.8)
+[d_generic.c:5405 build_uncomp_hdrs()] length of transport header = 0 bytes
+[d_generic.c:5563 build_uncomp_ipv4()] Total Length = 0x0026 (IHL * 4 + 18)
+[d_generic.c:5567 build_uncomp_ipv4()] IP checksum = 0xa93f
+[d_generic.c:5789 check_uncomp_crc()] CRC-3 on uncompressed header = 0x5
+[d_generic.c:1532 d_generic_decode()] CRC is correct
+[d_generic.c:1671 d_generic_decode()] uncompressed packet length = 38 bytes
+[rohc_decomp.c:1376 rohc_decompress3()] d_decode_header returned code 0
+[rohc_decomp.c:1494 rohc_decompress3()] packet decompression succeeded
+[rohc_decomp.c:1515 rohc_decompress3()] feedback curr -12
+[rohc_decomp.c:1525 rohc_decompress3()] feedback curr 0
+IP packet resulted from the ROHC decompression:
+NO FEEDBACK TO SEND, WHATDO?
+-----------------------
+Sent a feedback of length: 7
+00000   f6 20 4d 41 8f 19 50                                . MA..P
+-----------------------
+
+Packet number 10:
+       From: 192.168.0.100
+         To: 192.168.0.102
+   Protocol: UDP
+   Src port: 59707
+   Dst port: 3490
+   Payload (19 bytes):
+00000   45 68 65 6c 6c 6f 2c 20  52 4f 48 43 20 77 6f 72    Ehello, ROHC wor
+00016   6c 64 21                                            ld!
+Attempting to Decompress, IN O_MODE
+
+decompress the fake ROHC packet
+[rohc_decomp.c:1359 rohc_decompress3()] decompress the 19-byte packet #10
+[rohc_decomp.c:3895 rohc_decomp_parse_padding()] skip 0 byte(s) of padding
+[rohc_decomp.c:1751 d_decode_header()] decompressor received 0 bytes of feedback for the same-side associated compressor
+[rohc_decomp.c:3831 rohc_decomp_decode_cid()] no add-CID found, CID defaults to 0
+[rohc_decomp.c:1951 d_decode_header()] ROHC packet is not an IR packet
+[rohc_decomp.c:1966 d_decode_header()] context with CID 0 found
+[rohc_decomp.c:2032 d_decode_header()] decode packet as 'UO-0'
+[d_generic.c:1875 parse_uo0()] 4 SN bits = 0x8
+[d_generic.c:1880 parse_uo0()] CRC-3 found in packet = 0x05
+[d_generic.c:1447 d_generic_decode()] ROHC payload (length = 18 bytes) starts at offset 1
+[d_generic.c:6039 decode_values_from_bits()] decoded SN = 19864 / 0x4d98 (nr bits = 4, bits = 8 / 0x8)
+[d_generic.c:6209 decode_ip_values_from_bits()] decoded outer TOS/TC = 0
+[d_generic.c:6222 decode_ip_values_from_bits()] decoded outer TTL/HL = 1
+[d_generic.c:6236 decode_ip_values_from_bits()] decoded outer protocol/NH = 134
+[d_generic.c:6252 decode_ip_values_from_bits()] decoded outer NBO = 1
+[d_generic.c:6265 decode_ip_values_from_bits()] decoded outer RND = 0
+[d_generic.c:6278 decode_ip_values_from_bits()] decoded outer SID = 1
+[d_generic.c:6337 decode_ip_values_from_bits()] decoded outer IP-ID = 0x0000 (rnd = 0, nbo = 1, sid = 1, nr bits = 0, bits = 0x0)
+[d_generic.c:6350 decode_ip_values_from_bits()] decoded outer DF = 0
+[d_generic.c:6366 decode_ip_values_from_bits()] decoded outer src address = 01020304 (1.2.3.4)
+[d_generic.c:6382 decode_ip_values_from_bits()] decoded outer dst address = 05060708 (5.6.7.8)
+[d_generic.c:5405 build_uncomp_hdrs()] length of transport header = 0 bytes
+[d_generic.c:5563 build_uncomp_ipv4()] Total Length = 0x0026 (IHL * 4 + 18)
+[d_generic.c:5567 build_uncomp_ipv4()] IP checksum = 0xa93f
+[d_generic.c:5789 check_uncomp_crc()] CRC-3 on uncompressed header = 0x5
+[d_generic.c:1532 d_generic_decode()] CRC is correct
+[d_generic.c:1671 d_generic_decode()] uncompressed packet length = 38 bytes
+[rohc_decomp.c:1376 rohc_decompress3()] d_decode_header returned code 0
+[rohc_decomp.c:1494 rohc_decompress3()] packet decompression succeeded
+[rohc_decomp.c:1515 rohc_decompress3()] feedback curr -12
+[rohc_decomp.c:1525 rohc_decompress3()] feedback curr 0
+IP packet resulted from the ROHC decompression:
+NO FEEDBACK TO SEND, WHATDO?
+-----------------------
+Sent a feedback of length: 7
+00000   f6 20 4d 41 8f 1a 50                                . MA..P
+-----------------------
+
+Capture complete.
